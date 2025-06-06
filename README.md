@@ -22,7 +22,7 @@ This project aims to lay the first brick of a larger system designed to assist a
 #### Usage :
 ```bash
 # Protect an image
-python artshield.py secure --input image.jpg --output image_protected.jpg
+python project.py secure --input image.jpg --output image_protected.jpg
 
 # Test image protection
-python artshield.py test --input image_protected.jpg --reference image.jpg
+python project.py test --input image_protected.jpg --reference image.jpg
