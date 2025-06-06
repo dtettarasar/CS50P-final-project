@@ -1,0 +1,20 @@
+# Environnement virtuel Python
+venv/
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers de logs ou de débug
+*.log
+
+# Fichiers systèmes (souvent créés par erreur)
+.DS_Store
+Thumbs.db
+
+# En cas de notebook Jupyter (au cas où)
+.ipynb_checkpoints/
+
+# Cache pip (si jamais t'utilises pip cache)
+pip-wheel-metadata/
