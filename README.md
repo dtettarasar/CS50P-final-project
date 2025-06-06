@@ -32,6 +32,7 @@ python -m venv venv
 source venv/bin/activate  # macOS/Linux
 # or
 venv\Scripts\activate  # Windows
+```
 
 2. Install the required packages:
 
