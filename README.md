@@ -27,7 +27,7 @@ This project lays the foundation for a larger system designed to help artists, p
 
 1. Create and activate a virtual environment:
 
-```bash
+```
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
 # or
@@ -36,16 +36,21 @@ venv\Scripts\activate  # Windows
 
 2. Install the required packages:
 
-```bash
+```
 pip install -r requirements.txt
 
-# Protect an image
+```
 
-```bash
+#### Usage:
+
+1. Protect an image
+
+```
 python project.py secure --input image.jpg --output image_protected.jpg
+```
 
-# Test image protection
+2. Test image protection
 
-```bash
+```
 python project.py test --input image_protected.jpg --reference image.jpg
-
+```
