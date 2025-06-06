@@ -2,15 +2,15 @@ def main():
     ...
 
 
-def function_1():
+def get_img_file():
     ...
 
 
-def function_2():
+def secure_img():
     ...
 
 
-def function_n():
+def check_img_protection():
     ...
 
 
