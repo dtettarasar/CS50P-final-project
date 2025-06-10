@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+import sys
 import argparse
 
 def main():
@@ -113,6 +114,8 @@ def main():
         # else:
         #     print(f"Erreur: Le fichier d'entrée '{args.input}' n'existe pas.")
 
+        load_image_file(args.input)
+
     elif args.command == 'verify':
         print(f"Vérification de l'image : {args.input}")
         if args.output_report:
@@ -129,17 +132,23 @@ def main():
         # else:
         #     print(f"Erreur: Le fichier d'entrée '{args.input}' n'existe pas.")
 
-    # file_name = 'ybear.jpg'
-    # file_path = os.path.abspath(file_name)
-    # print(file_path)
-    # image = Image.open(file_path)
-    # print(image)
 
-
-def get_img_file():
+def load_image_file(img_path):
 
     formats_list = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp']
-    ...
+
+    try:
+
+        img_pil = Image.open(img_path)
+        print(img_pil)
+
+    except FileNotFoundError:
+        # This exception will be thrown if Image.open() does not find the file
+        sys.exit(f'Error: The input file ‘{img_path}’ was not found.')
+
+    except Image.UnidentifiedImageError:
+        # Cette exception est levée par Pillow si le fichier n'est pas une image valide
+        sys.exit(f"Error: Unable to identify or open image file ‘{img_path}’. Check format or corruption.")
 
 
 def secure_img(img_file_path, protection_strength):
