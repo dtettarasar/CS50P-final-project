@@ -17,14 +17,14 @@ def main():
     if args.verbose:
         # Ici tu configurerais ton logging pour être plus verbeux
         logging.getLogger().setLevel(logging.DEBUG)
-        print("Verbose mode enabled")
+        logging.debug("Verbose mode enabled")
         
-    print(f"Command executed : {args.command}")
+    logging.info(f"Command executed : {args.command}")
 
     if args.command == 'secure':
-        print(f"Image to protect : {args.input}")
-        print(f"Saved file path : {args.output}")
-        print(f"Strength protection : {args.strength}")
+        logging.info(f"Image to protect : {args.input}")
+        logging.info(f"Saved file path : {args.output}")
+        logging.info(f"Strength protection : {args.strength}")
         
         secure_img(args.input, args.output, args.strength, args.verbose)
 
