@@ -20,11 +20,11 @@ def main():
     # --- Sous-commande 'secure' ---
     secure_parser = subparsers.add_parser(
         'secure', 
-        help='Applique des protections anti-IA à une image.',
+        help='Apply anti-IA protections to an image.',
         description="""
-        Cette commande applique un ensemble de techniques de protection
-        (comme le filigranage DCT invisible) à une image pour la protéger
-        contre l'entraînement des modèles d'IA et l'analyse.
+        This command applies a set of protection techniques
+        (such as invisible DCT watermarking) to an image to protect it
+        from AI model training and analysis.
         """
     )
 
@@ -33,7 +33,7 @@ def main():
         '-i', 
         type=str, 
         required=True, 
-        help='Chemin vers l\'image d\'entrée à protéger (ex: image.jpg).'
+        help='Define the path for the input image file to protect (ex: image.jpg).'
     )
 
     secure_parser.add_argument(
@@ -41,7 +41,7 @@ def main():
         '-o', 
         type=str, 
         required=True, 
-        help='Chemin où sauvegarder l\'image protégée (ex: image_protected.jpg).'
+        help='Define the path for the output image file to save (ex: image_protected.jpg).'
     )
 
     secure_parser.add_argument(
@@ -49,14 +49,14 @@ def main():
         '-s', 
         type=float, 
         default=5.0, # Valeur par défaut
-        help='Force de la protection (valeur flottante, ex: 1.0, 5.0, 10.0). Plus la valeur est élevée, plus la protection est forte mais potentiellement visible.'
+        help='Protection strength (floating value, e.g. 1.0, 5.0, 10.0). The higher the value, the stronger and more visible the protection.'
     )
 
     secure_parser.add_argument(
         '--verbose',
         '-v',
         action='store_true', # stocke True si l'argument est présent
-        help='Active le mode verbeux pour des informations de débogage supplémentaires.'
+        help='Enables verbose mode for additional debugging information.'
     )
 
     # Analyser les arguments de la ligne de commande
@@ -66,9 +66,9 @@ def main():
     if args.verbose:
         # Ici tu configurerais ton logging pour être plus verbeux
         # Par exemple: logging.getLogger().setLevel(logging.DEBUG)
-        print("Mode verbeux activé.")
+        print("Verbose mode enabled")
         
-    print(f"Commande exécutée : {args.command}")
+    print(f"Command executed : {args.command}")
 
     # file_name = 'ybear.jpg'
     # file_path = os.path.abspath(file_name)
