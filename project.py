@@ -164,6 +164,7 @@ def load_image_file(img_path):
     except PIL.UnidentifiedImageError:
         # Cette exception est levée par Pillow si le fichier n'est pas une image valide
         raise PIL.UnidentifiedImageError(f"Unable to identify or open image file '{img_path}'. Check format or corruption.")
+    
     except Exception as e:
         # Capture toute autre erreur inattendue lors de l'ouverture du fichier
         raise IOError(f"An unexpected error occurred while opening the image: {e}")
