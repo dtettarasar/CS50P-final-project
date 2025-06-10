@@ -172,7 +172,7 @@ def load_image_file(img_path):
 
 def secure_img(input_path, output_path, strength, verbose_mode):
 
-    logging.info('init the secure_img function')
+    logging.info(f"Initiating image protection for: '{input_path}' with strength: {strength}")
 
     try:
         # Appeler la fonction load_image_file qui maintenant LÈVE les exceptions
