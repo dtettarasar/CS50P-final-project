@@ -59,6 +59,35 @@ def main():
         help='Enables verbose mode for additional debugging information.'
     )
 
+    # --- Sous-commande 'verify' (pour plus tard) ---
+    verify_parser = subparsers.add_parser(
+        'verify', 
+        help='Checks whether an image has been protected and/or altered.',
+        description="""
+        This command analyzes an image to detect the presence of
+        protections and verify its integrity via digital signatures or hashes.
+        """
+    )
+    verify_parser.add_argument(
+        '--input', 
+        '-i', 
+        type=str, 
+        required=True, 
+        help='path for the image file to verify (ex: image_protected.jpg).'
+    )
+    verify_parser.add_argument(
+        '--output-report', # Pourrait générer un rapport
+        '-r', 
+        type=str, 
+        help='path for the report file to save (optionnal).'
+    )
+    # Exemple d'autres arguments pour la vérification
+    verify_parser.add_argument(
+        '--strict-mode', 
+        action='store_true', 
+        help='Activates a strict verification mode to detect the slightest alteration.'
+    )
+
     # Analyser les arguments de la ligne de commande
     args = parser.parse_args()
 
