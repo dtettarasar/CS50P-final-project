@@ -142,7 +142,7 @@ def get_img_file():
     ...
 
 
-def secure_img():
+def secure_img(img_file_path, protection_strength):
     ...
 
 
