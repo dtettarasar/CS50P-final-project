@@ -100,9 +100,9 @@ def main():
     print(f"Command executed : {args.command}")
 
     if args.command == 'secure':
-        print(f"Protection de l'image : {args.input}")
-        print(f"Sauvegarde sous : {args.output}")
-        print(f"Force de protection : {args.strength}")
+        print(f"Image to protect : {args.input}")
+        print(f"Saved file path : {args.output}")
+        print(f"Strength protection : {args.strength}")
         
         # todo 
         # appeler la fonction de protection réelle
