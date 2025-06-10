@@ -99,6 +99,36 @@ def main():
         
     print(f"Command executed : {args.command}")
 
+    if args.command == 'secure':
+        print(f"Protection de l'image : {args.input}")
+        print(f"Sauvegarde sous : {args.output}")
+        print(f"Force de protection : {args.strength}")
+        
+        # todo 
+        # appeler la fonction de protection réelle
+        # if os.path.exists(args.input):
+        #     # Appeler la fonction de protection
+        #     # protected_image = apply_dct_watermark_multi_channel(args.input, args.strength)
+        #     # Si successful: save protected_image to args.output
+        # else:
+        #     print(f"Erreur: Le fichier d'entrée '{args.input}' n'existe pas.")
+
+    elif args.command == 'verify':
+        print(f"Vérification de l'image : {args.input}")
+        if args.output_report:
+            print(f"Rapport sauvegardé sous : {args.output_report}")
+        if args.strict_mode:
+            print("Mode strict de vérification activé.")
+            
+        # todo
+        # appeler la fonction de vérification réelle
+        # if os.path.exists(args.input):
+        #     # Appeler la fonction de vérification
+        #     # result = verify_image_protection(args.input, args.strict_mode)
+        #     # Print ou save result
+        # else:
+        #     print(f"Erreur: Le fichier d'entrée '{args.input}' n'existe pas.")
+
     # file_name = 'ybear.jpg'
     # file_path = os.path.abspath(file_name)
     # print(file_path)
