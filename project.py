@@ -140,6 +140,20 @@ def load_image_file(img_path):
         img_pil = Image.open(img_path)
         logging.info(f"Image loaded: '{img_path}', Format: {img_pil.format}, Mode: {img_pil.mode}")
 
+        # --- Débogage de l'objet PIL.Image ---
+        logging.debug("--- Attributs de l'objet PIL.Image.Image ---")
+        logging.debug(f"Image Mode: {img_pil.mode}")
+        logging.debug(f"Image Size (width, height): {img_pil.size}")
+        logging.debug(f"Image Width: {img_pil.width}")
+        logging.debug(f"Image Height: {img_pil.height}")
+        logging.debug(f"Image Format: {img_pil.format}")
+        logging.debug(f"Image Bands: {img_pil.getbands()}")
+        
+        if img_pil.info:
+            logging.debug(f"Image Info (metadata): {img_pil.info}")
+        else:
+            logging.debug("No specific metadata found in img_pil.info.")
+
         # Convertir l'image en RGB si nécessaire pour assurer 3 canaux pour le traitement DCT
         if img_pil.mode != 'RGB':
             logging.debug(f"Converting image from {img_pil.mode} to RGB mode.")
