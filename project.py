@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import argparse
+import numpy as np
 
 def main():
 
@@ -182,6 +183,19 @@ def secure_img(input_path, output_path, strength, verbose_mode):
         # Si l'image est chargée avec succès, tu peux continuer le processus de protection
         # Convertir PIL Image en NumPy array (si besoin pour DCT)
         # img_np = np.array(img_pil) 
+
+        # --- Étape clé: Convertir l'objet PIL.Image en un tableau NumPy ---
+        img_np = np.array(img_pil)
+        logging.debug(f"PIL Image converted to NumPy array with shape: {img_np.shape}")
+
+        # --- Reconvertir le tableau NumPy modifié en un objet PIL.Image ---
+        protected_img_pil = Image.fromarray(img_np)
+        logging.debug("Protected NumPy array converted back to PIL Image.")
+        
+        # Sauvegarder l'image protégée
+        protected_img_pil.save(output_path)
+        logging.info(f"Protected image saved successfully to '{output_path}'.")
+
 
     except (FileNotFoundError, PIL.UnidentifiedImageError, IOError) as e:
         # Ces exceptions sont levées par load_image_file
