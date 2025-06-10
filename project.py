@@ -1,6 +1,8 @@
+import PIL
 from PIL import Image
 import os
 import sys
+import logging
 import argparse
 
 def main():
@@ -95,7 +97,7 @@ def main():
     # Logique principale du programme basée sur les arguments analysés
     if args.verbose:
         # Ici tu configurerais ton logging pour être plus verbeux
-        # Par exemple: logging.getLogger().setLevel(logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
         print("Verbose mode enabled")
         
     print(f"Command executed : {args.command}")
@@ -105,16 +107,7 @@ def main():
         print(f"Saved file path : {args.output}")
         print(f"Strength protection : {args.strength}")
         
-        # todo 
-        # appeler la fonction de protection réelle
-        # if os.path.exists(args.input):
-        #     # Appeler la fonction de protection
-        #     # protected_image = apply_dct_watermark_multi_channel(args.input, args.strength)
-        #     # Si successful: save protected_image to args.output
-        # else:
-        #     print(f"Erreur: Le fichier d'entrée '{args.input}' n'existe pas.")
-
-        load_image_file(args.input)
+        secure_img(args.input, args.output, args.strength, args.verbose)
 
     elif args.command == 'verify':
         print(f"Vérification de l'image : {args.input}")
@@ -135,24 +128,50 @@ def main():
 
 def load_image_file(img_path):
 
-    formats_list = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp']
+    """
+    Loads an image file using Pillow and performs initial checks.
+    Returns a Pillow Image object, or throws an exception on error.
+    """
+
+    if not os.path.exists(img_path):
+        raise FileNotFoundError(f"The input file '{img_path}' was not found.")
+    
+    try:
+        img_pil = Image.open(img_path)
+        logging.info(f"Image loaded: '{img_path}', Format: {img_pil.format}, Mode: {img_pil.mode}")
+
+        # Convertir l'image en RGB si nécessaire pour assurer 3 canaux pour le traitement DCT
+        if img_pil.mode != 'RGB':
+            logging.debug(f"Converting image from {img_pil.mode} to RGB mode.")
+            img_pil = img_pil.convert('RGB')
+        
+        return img_pil
+
+    except PIL.UnidentifiedImageError:
+        # Cette exception est levée par Pillow si le fichier n'est pas une image valide
+        raise PIL.UnidentifiedImageError(f"Unable to identify or open image file '{img_path}'. Check format or corruption.")
+    except Exception as e:
+        # Capture toute autre erreur inattendue lors de l'ouverture du fichier
+        raise IOError(f"An unexpected error occurred while opening the image: {e}")
+
+
+def secure_img(input_path, output_path, strength, verbose_mode):
+
+    logging.info('init the secure_img function')
 
     try:
+        # Appeler la fonction load_image_file qui maintenant LÈVE les exceptions
+        img_pil = load_image_file(input_path)
+        logging.debug(img_pil)
 
-        img_pil = Image.open(img_path)
-        print(img_pil)
+        # Si l'image est chargée avec succès, tu peux continuer le processus de protection
+        # Convertir PIL Image en NumPy array (si besoin pour DCT)
+        # img_np = np.array(img_pil) 
 
-    except FileNotFoundError:
-        # This exception will be thrown if Image.open() does not find the file
-        sys.exit(f'Error: The input file ‘{img_path}’ was not found.')
-
-    except Image.UnidentifiedImageError:
-        # Cette exception est levée par Pillow si le fichier n'est pas une image valide
-        sys.exit(f"Error: Unable to identify or open image file ‘{img_path}’. Check format or corruption.")
-
-
-def secure_img(img_file_path, protection_strength):
-    ...
+    except (FileNotFoundError, PIL.UnidentifiedImageError, IOError) as e:
+        # Ces exceptions sont levées par load_image_file
+        logging.error(f"Error during image processing for secure command: {e}")
+        sys.exit(1) # Quitter le programme avec un code d'erreur
 
 
 def check_img_protection():
