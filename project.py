@@ -94,17 +94,18 @@ def secure_img(input_path, output_path, strength, verbose_mode):
     logging.info(f"Initiating image protection for: '{input_path}' with strength: {strength}")
 
     try:
-        # Appeler la fonction load_image_file qui maintenant LÈVE les exceptions
+        # 1. Charger l'image PIL
         img_pil = load_image_file(input_path)
-        logging.debug(img_pil)
+        logging.debug(f"Loaded PIL Image: {img_pil}")
 
-        # Si l'image est chargée avec succès, tu peux continuer le processus de protection
-        # Convertir PIL Image en NumPy array (si besoin pour DCT)
-        # img_np = np.array(img_pil) 
-
-        # --- Étape clé: Convertir l'objet PIL.Image en un tableau NumPy ---
+        # 2. Convertir l'objet PIL.Image en un tableau NumPy
         img_np = np.array(img_pil)
         logging.debug(f"PIL Image converted to NumPy array with shape: {img_np.shape}")
+
+        # 3. *** APPLIQUER LA PROTECTION DCT ICI ***
+        # C'est l'étape où la logique de modification de l'image est exécutée.
+        protected_img_np = apply_dct_protection(img_np, strength, verbose_mode)
+        logging.debug("DCT protection applied successfully to NumPy array.")
 
         # --- Reconvertir le tableau NumPy modifié en un objet PIL.Image ---
         protected_img_pil = Image.fromarray(img_np)
@@ -208,6 +209,10 @@ def load_parser():
     )
 
     return parser
+
+def apply_dct_protection(img_np, strength, verbose_mode):
+
+    logging.info("init apply_dct_protection function")
 
 
 def check_img_protection():
