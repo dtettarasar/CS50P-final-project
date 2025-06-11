@@ -18,6 +18,9 @@ def test_load_image_file():
     assert img_cookie.height == 1600
     assert img_cookie.format == "WEBP"
 
+
+def test_load_image_file_errors():
+
     with pytest.raises(FileNotFoundError):
         assert load_image_file("test_files/wrong_file_name.jpg")
 
@@ -25,9 +28,31 @@ def test_load_image_file():
         assert load_image_file("test_files/test_files.txt")
 
 
-def test_function_2():
-    ...
+def test_load_image_file_unexpected_io_error(mocker):
+    # Simule une IOError lors de l'appel à Image.open
+    # On patche Image.open car c'est la fonction externe qui pourrait lever cette erreur
+    mocker.patch('PIL.Image.open', side_effect=IOError("Simulated unexpected I/O error"))
+
+    # On a besoin d'un fichier existant pour que la première vérification (os.path.exists) passe
+    # Mais Image.open va ensuite échouer
+    dummy_existing_file = "test_files/cs50.jpg" # Ou n'importe quel fichier existant
+
+    with pytest.raises(IOError) as excinfo:
+        load_image_file(dummy_existing_file)
+
+    # Tu peux aussi vérifier le message d'erreur si tu le souhaites
+    assert "Simulated unexpected I/O error" in str(excinfo.value)
+    assert "An unexpected error occurred while opening the image" in str(excinfo.value) # Vérifie le message de ta fonction
 
 
-def test_function_n():
-    ...
+def test_load_image_file_other_unexpected_exception(mocker):
+    # Simule une autre Exception inattendue lors de l'appel à Image.open
+    mocker.patch('PIL.Image.open', side_effect=Exception("Something really bad happened!"))
+
+    dummy_existing_file = "test_files/cs50.jpg"
+
+    with pytest.raises(IOError) as excinfo: # Ton code convertit toutes les 'Exception' en 'IOError'
+        load_image_file(dummy_existing_file)
+
+    assert "Something really bad happened!" in str(excinfo.value)
+    assert "An unexpected error occurred while opening the image" in str(excinfo.value)
