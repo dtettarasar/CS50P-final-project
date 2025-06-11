@@ -210,13 +210,75 @@ def load_parser():
 
     return parser
 
-def apply_dct_protection(img_np, strength, verbose_mode):
 
-    logging.info("init apply_dct_protection function")
+def _apply_dct_watermark_to_channel(channel_data, strength, seed_value, verbose_mode=False):
+    """
+    Applique un filigrane DCT à un seul canal d'image (NumPy array).
+    """
+    if verbose_mode:
+        logging.debug(f"Starting channel processing (shape: {channel_data.shape})")
+
+    centered_channel = channel_data - 128.0
+    if verbose_mode:
+        logging.debug(f"Centered channel. Min: {np.min(centered_channel)}, Max: {np.max(centered_channel)}")
+
+    dct_coeffs = dct(dct(centered_channel.T, norm='ortho').T, norm='ortho')
+    if verbose_mode:
+        logging.debug(f"DCT applied. Coeffs[0,0]: {dct_coeffs[0,0]:.2f}")
+
+    np.random.seed(seed_value)
+    watermark = np.random.normal(0, 2, channel_data.shape)
+    if verbose_mode:
+        logging.debug(f"Watermark generated. Min: {np.min(watermark):.2f}, Max: {np.max(watermark):.2f}")
+
+    dct_coeffs += strength * watermark
+    if verbose_mode:
+        logging.debug(f"Watermark added to DCT coefficients. New Coeffs[0,0]: {dct_coeffs[0,0]:.2f}")
+
+    reconstructed_centered_channel = idct(idct(dct_coeffs.T, norm='ortho').T, norm='ortho')
+    if verbose_mode:
+        logging.debug(f"IDCT applied.")
+
+    watermarked_channel = np.clip(reconstructed_centered_channel + 128.0, 0, 255).astype(np.uint8)
+    if verbose_mode:
+        logging.debug(f"Processed and clipped channel. Min: {np.min(watermarked_channel)}, Max: {np.max(watermarked_channel)}")
+    return watermarked_channel
 
 
-def check_img_protection():
-    ...
+def apply_dct_protection(img_np, strength, verbose_mode=False):
+    """
+    Applique un filigrane DCT à tous les canaux d'une image couleur NumPy.
+    Prend un NumPy array en entrée et retourne un NumPy array modifié.
+    """
+    if verbose_mode:
+        logging.info(f"Applying DCT protection on all channels with strength={strength}")
+
+    if img_np.ndim < 3 or img_np.shape[2] < 3:
+        logging.error("Input image must have at least 3 channels (RGB/BGR) for multi-channel DCT protection.")
+        # Pour le test, on pourrait retourner une copie si la conversion échoue
+        return img_np.copy()
+
+    # Créer une copie de l'image NumPy pour ne pas modifier l'originale directement
+    processed_image_np = img_np.copy()
+
+    for i in range(3): # Index 0 for Red, 1 for Green, 2 for Blue (Pillow RGB)
+        channel_name = ["Red", "Green", "Blue"][i]
+        if verbose_mode:
+            logging.info(f"Processing channel: {channel_name}")
+        
+        channel_seed = 42 + i # Use a different seed per channel for independent noise
+
+        processed_channel = _apply_dct_watermark_to_channel(
+            processed_image_np[:, :, i].astype(float), # Pass the channel as float
+            strength,
+            channel_seed,
+            verbose_mode=verbose_mode
+        )
+        processed_image_np[:, :, i] = processed_channel # Reassign the processed channel
+
+    if verbose_mode:
+        logging.info("DCT protection applied to all channels.")
+    return processed_image_np
     
 
 if __name__ == "__main__":
