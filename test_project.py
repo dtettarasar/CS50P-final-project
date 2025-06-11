@@ -1,3 +1,5 @@
+import pytest
+import PIL
 from project import load_image_file
 
 def test_load_image_file():
@@ -15,6 +17,12 @@ def test_load_image_file():
     assert img_cookie.width == 1348
     assert img_cookie.height == 1600
     assert img_cookie.format == "WEBP"
+
+    with pytest.raises(FileNotFoundError):
+        assert load_image_file("test_files/wrong_file_name.jpg")
+
+    with pytest.raises(PIL.UnidentifiedImageError):
+        assert load_image_file("test_files/test_files.txt")
 
 
 def test_function_2():
