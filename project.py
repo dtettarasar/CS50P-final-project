@@ -213,35 +213,71 @@ def load_parser():
 
 def _apply_dct_watermark_to_channel(channel_data, strength, seed_value, verbose_mode=False):
     """
-    Applique un filigrane DCT à un seul canal d'image (NumPy array).
+    Prend un seul canal de couleur (par exemple, le canal Rouge) sous forme de tableau NumPy 2D et y applique le filigrane.
     """
     if verbose_mode:
         logging.debug(f"Starting channel processing (shape: {channel_data.shape})")
 
+    # 1. Centrage des données des pixels
+    # Les valeurs de pixels sont généralement entre 0 et 255.
+    # Pour que la DCT fonctionne mieux (et pour des raisons mathématiques de symétrie),
+    # il est courant de centrer les données autour de zéro.
+    # On soustrait 128 (qui est environ la moitié de 255).
     centered_channel = channel_data - 128.0
     if verbose_mode:
         logging.debug(f"Centered channel. Min: {np.min(centered_channel)}, Max: {np.max(centered_channel)}")
 
+    # 2. Application de la Transformation Cosinus Discrète (DCT)
+    # scipy.fftpack.dct effectue la DCT.
+    # Pour une image 2D (qui est ce qu'est un canal), la DCT doit être appliquée deux fois:
+    # d'abord sur les lignes, puis sur les colonnes (ou vice-versa).
+    # .T (transpose) est utilisé pour appliquer la DCT le long des colonnes après l'avoir appliquée le long des lignes.
+    # 'norm='ortho'' assure une transformation orthogonale, ce qui signifie que l'IDCT est simplement l'inverse de la DCT.
     dct_coeffs = dct(dct(centered_channel.T, norm='ortho').T, norm='ortho')
     if verbose_mode:
         logging.debug(f"DCT applied. Coeffs[0,0]: {dct_coeffs[0,0]:.2f}")
+    # dct_coeffs contient maintenant les coefficients fréquentiels de l'image.
+    # dct_coeffs[0,0] représente la composante DC (la moyenne de l'énergie du canal).
 
+    # 3. Génération du Filigrane (Watermark)
+    # np.random.seed(seed_value): Fixe la graine du générateur de nombres aléatoires.
+    # C'est CRUCIAL. Si tu appliques le filigrane à nouveau (par exemple, pour la vérification),
+    # tu auras besoin de générer EXACTEMENT le même bruit aléatoire. La seed garantit cela.
+    # watermark = np.random.normal(0, 2, channel_data.shape): Génère un tableau de bruit
+    # aléatoire qui suit une distribution normale (gaussienne) avec une moyenne de 0 et
+    # un écart-type de 2. La taille du tableau est la même que celle du canal d'image.
+    # Ce bruit sera notre "signature" ou "protection" ajoutée.
     np.random.seed(seed_value)
     watermark = np.random.normal(0, 2, channel_data.shape)
     if verbose_mode:
         logging.debug(f"Watermark generated. Min: {np.min(watermark):.2f}, Max: {np.max(watermark):.2f}")
 
+    # 4. Injection du Filigrane dans les Coefficients DCT
+    # C'est l'étape clé du filigranage. Nous ajoutons le bruit généré aux coefficients DCT.
+    # La 'strength' est un facteur de mise à l'échelle. Plus la force est élevée,
+    # plus le filigrane est prononcé (plus visible, mais aussi plus résistant).
     dct_coeffs += strength * watermark
     if verbose_mode:
         logging.debug(f"Watermark added to DCT coefficients. New Coeffs[0,0]: {dct_coeffs[0,0]:.2f}")
 
+    # 5. Application de la Transformation Cosinus Discrète Inverse (IDCT)
+    # Nous utilisons idct pour revenir du domaine fréquentiel au domaine spatial (pixels).
+    # C'est l'inverse exact de l'étape 2.
     reconstructed_centered_channel = idct(idct(dct_coeffs.T, norm='ortho').T, norm='ortho')
     if verbose_mode:
         logging.debug(f"IDCT applied.")
 
+    # 6. Dé-centrage et Limitation des valeurs des pixels
+    # Nous ajoutons 128.0 pour ramener les valeurs à la plage 0-255.
+    # np.clip(..., 0, 255): Les transformations peuvent parfois produire des valeurs
+    # en dehors de la plage valide [0, 255]. `np.clip` assure que toutes les valeurs
+    # restent dans cette plage en les "coupant" si elles sont trop basses (<0) ou trop hautes (>255).
+    # .astype(np.uint8): Convertit le tableau en type entier non signé de 8 bits,
+    # ce qui est le format standard pour les pixels d'image (0-255).
     watermarked_channel = np.clip(reconstructed_centered_channel + 128.0, 0, 255).astype(np.uint8)
     if verbose_mode:
         logging.debug(f"Processed and clipped channel. Min: {np.min(watermarked_channel)}, Max: {np.max(watermarked_channel)}")
+    
     return watermarked_channel
 
 
@@ -253,31 +289,52 @@ def apply_dct_protection(img_np, strength, verbose_mode=False):
     if verbose_mode:
         logging.info(f"Applying DCT protection on all channels with strength={strength}")
 
+    # Vérification des dimensions de l'image
+    # img_np.ndim: Nombre de dimensions du tableau (2 pour niveaux de gris, 3 pour couleur).
+    # img_np.shape[2]: Taille de la 3ème dimension (nombre de canaux).
+    # On s'assure que l'image a au moins 3 canaux (pour RGB/BGR).
     if img_np.ndim < 3 or img_np.shape[2] < 3:
         logging.error("Input image must have at least 3 channels (RGB/BGR) for multi-channel DCT protection.")
-        # Pour le test, on pourrait retourner une copie si la conversion échoue
+        # Retourne une copie si ce n'est pas une image couleur, pour éviter un crash.
         return img_np.copy()
 
-    # Créer une copie de l'image NumPy pour ne pas modifier l'originale directement
+    # Créer une copie de l'image NumPy
+    # C'est important ! On ne veut pas modifier l'array original en place si cette fonction est appelée
+    # et que l'appelant veut garder l'original inchangé.
     processed_image_np = img_np.copy()
 
-    for i in range(3): # Index 0 for Red, 1 for Green, 2 for Blue (Pillow RGB)
+    # Itération sur les canaux (R, G, B)
+    # range(3) pour les trois premiers canaux (0, 1, 2) correspondant à R, G, B dans Pillow.
+    for i in range(3):
         channel_name = ["Red", "Green", "Blue"][i]
         if verbose_mode:
             logging.info(f"Processing channel: {channel_name}")
         
-        channel_seed = 42 + i # Use a different seed per channel for independent noise
+        # Génération d'une graine (seed) différente pour chaque canal
+        # channel_seed = 42 + i: Permet de générer un filigrane aléatoire DIFFERENT pour chaque canal.
+        # C'est une bonne pratique pour augmenter la robustesse et la complexité du filigrane.
+        # L'utilisation de 42 est juste un nombre arbitraire "magique" souvent utilisé pour les graines.
+        channel_seed = 42 + i
 
+        # Extraction du canal et conversion en float
+        # processed_image_np[:, :, i]: Sélectionne toutes les lignes, toutes les colonnes,
+        # et le i-ème canal. Cela extrait un tableau 2D (le canal).
+        # .astype(float): La DCT fonctionne mieux avec des nombres flottants, car les
+        # coefficients peuvent être non entiers. On convertit explicitement le canal en float.
         processed_channel = _apply_dct_watermark_to_channel(
-            processed_image_np[:, :, i].astype(float), # Pass the channel as float
+            processed_image_np[:, :, i].astype(float),
             strength,
             channel_seed,
             verbose_mode=verbose_mode
         )
-        processed_image_np[:, :, i] = processed_channel # Reassign the processed channel
+        
+        # Réassignation du canal traité
+        # Le canal modifié est remis à sa place dans le tableau d'image complet.
+        processed_image_np[:, :, i] = processed_channel
 
     if verbose_mode:
         logging.info("DCT protection applied to all channels.")
+    
     return processed_image_np
     
 
