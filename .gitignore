@@ -18,3 +18,7 @@ Thumbs.db
 
 # Cache pip (si jamais t'utilises pip cache)
 pip-wheel-metadata/
+
+# Ignorer les fichiers de test générés
+test_files/output_files/*
+!test_files/output_files/description.txt
