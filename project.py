@@ -5,6 +5,7 @@ import sys
 import logging
 import argparse
 import numpy as np
+from scipy.fftpack import dct, idct
 
 def main():
 
@@ -108,7 +109,7 @@ def secure_img(input_path, output_path, strength, verbose_mode):
         logging.debug("DCT protection applied successfully to NumPy array.")
 
         # --- Reconvertir le tableau NumPy modifié en un objet PIL.Image ---
-        protected_img_pil = Image.fromarray(img_np)
+        protected_img_pil = Image.fromarray(protected_img_np)
         logging.debug("Protected NumPy array converted back to PIL Image.")
         
         # Sauvegarder l'image protégée
