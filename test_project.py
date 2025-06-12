@@ -6,7 +6,7 @@ from PIL.JpegImagePlugin import JpegImageFile
 from PIL.WebPImagePlugin import WebPImageFile
 
 import numpy as np 
-from project import load_image_file, pil_to_numpy, numpy_to_pil
+from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_protection
 
 def test_load_image_file():
 
@@ -117,3 +117,7 @@ def test_pil_numpy_conversion():
 
     reconverted_np_cookie = np.array(img_cookie_from_numpy)
     assert np.allclose(img_np_cookie.astype(float), reconverted_np_cookie.astype(float), atol=1)
+
+def test_apply_dct_protection_function():
+
+    ...
