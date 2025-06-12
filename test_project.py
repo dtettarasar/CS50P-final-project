@@ -1,6 +1,10 @@
 import pytest
+
 import PIL
 from PIL import Image
+from PIL.JpegImagePlugin import JpegImageFile
+from PIL.WebPImagePlugin import WebPImageFile
+
 import numpy as np 
 from project import load_image_file, pil_to_numpy, numpy_to_pil
 
@@ -8,12 +12,22 @@ def test_load_image_file():
 
     img_cs50 = load_image_file("test_files/cs50.jpg")
 
+    # Test la classe abstraite
+    assert isinstance(img_cs50, Image.Image)
+
+    # Test la sous classe de la variable
+    assert type(img_cs50) == JpegImageFile
+
     assert img_cs50.mode == "RGB"
     assert img_cs50.width == 2048
     assert img_cs50.height == 1366
     assert img_cs50.format == "JPEG"
 
     img_cookie = load_image_file("test_files/cookie_monster.webp")
+
+    assert isinstance(img_cookie, Image.Image)
+
+    assert type(img_cookie) == WebPImageFile
 
     assert img_cookie.mode == "RGB"
     assert img_cookie.width == 1348
