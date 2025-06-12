@@ -1,6 +1,7 @@
 import pytest
 import PIL
-from project import load_image_file
+import numpy as np 
+from project import load_image_file, pil_to_numpy, numpy_to_pil
 
 def test_load_image_file():
 
@@ -56,3 +57,13 @@ def test_load_image_file_other_unexpected_exception(mocker):
 
     assert "Something really bad happened!" in str(excinfo.value)
     assert "An unexpected error occurred while opening the image" in str(excinfo.value)
+
+def test_pil_numpy_conversion():
+
+    img_cs50 = load_image_file("test_files/cs50.jpg")
+
+    img_np = pil_to_numpy(img_cs50)
+
+    # type(grocery_list)
+
+    assert type(img_np) == np.ndarray
