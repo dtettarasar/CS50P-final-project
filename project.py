@@ -89,6 +89,19 @@ def load_image_file(img_path):
         # Capture toute autre erreur inattendue lors de l'ouverture du fichier
         raise IOError(f"An unexpected error occurred while opening the image: {e}")
 
+# ces deux fonctions servent à convertir un fichier image en array numpy et vice versa. Cette conversion de la donnée est nécessaire pour appliquer les protections.
+def pil_to_numpy(pil_image):
+    """Convertit un objet PIL Image en un tableau NumPy."""
+    # S'assurer que l'image est en RGB avant la conversion pour cohérence
+    if pil_image.mode != 'RGB':
+        pil_image = pil_image.convert('RGB')
+    return np.array(pil_image)
+
+def numpy_to_pil(numpy_array):
+    """Convertit un tableau NumPy en un objet PIL Image."""
+    # S'assurer que le type de données est correct pour PIL
+    return Image.fromarray(numpy_array.astype(np.uint8))
+
 
 def secure_img(input_path, output_path, strength, verbose_mode):
 
@@ -100,7 +113,7 @@ def secure_img(input_path, output_path, strength, verbose_mode):
         logging.debug(f"Loaded PIL Image: {img_pil}")
 
         # 2. Convertir l'objet PIL.Image en un tableau NumPy
-        img_np = np.array(img_pil)
+        img_np = pil_to_numpy(img_pil)
         logging.debug(f"PIL Image converted to NumPy array with shape: {img_np.shape}")
 
         # 3. *** APPLIQUER LA PROTECTION DCT ICI ***
@@ -109,7 +122,7 @@ def secure_img(input_path, output_path, strength, verbose_mode):
         logging.debug("DCT protection applied successfully to NumPy array.")
 
         # --- Reconvertir le tableau NumPy modifié en un objet PIL.Image ---
-        protected_img_pil = Image.fromarray(protected_img_np)
+        protected_img_pil = numpy_to_pil(protected_img_np)
         logging.debug("Protected NumPy array converted back to PIL Image.")
         
         # Sauvegarder l'image protégée
