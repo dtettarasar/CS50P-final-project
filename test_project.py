@@ -1,5 +1,6 @@
 import pytest
 import PIL
+from PIL import Image
 import numpy as np 
 from project import load_image_file, pil_to_numpy, numpy_to_pil
 
@@ -80,4 +81,25 @@ def test_pil_numpy_conversion():
     # test conversion back from numpy
     img_cs50_from_numpy = numpy_to_pil(img_np_cs50)
 
+    assert type(img_cs50_from_numpy) == Image.Image # Vérifie que c'est bien un objet PIL Image
     assert img_cs50_from_numpy.mode == "RGB"
+    assert img_cs50_from_numpy.width == img_cs50_pil_original.width
+    assert img_cs50_from_numpy.height == img_cs50_pil_original.height
+    # No need to test the format here, as it remains a PIL object in memory. format is not defined yet, it will be defined during saving process
+
+    img_cookie_from_numpy = numpy_to_pil(img_np_cookie)
+    assert type(img_cookie_from_numpy) == Image.Image
+    assert img_cookie_from_numpy.mode == "RGB"
+    assert img_cookie_from_numpy.width == img_cookie_pil_original.width
+    assert img_cookie_from_numpy.height == img_cookie_pil_original.height
+
+    # Vérifier si les valeurs des pixels sont les mêmes après l'aller-retour
+    # La conversion PIL -> NumPy -> PIL devrait préserver les valeurs des pixels.
+    # Quelques différences mineures peuvent survenir en raison des conversions de type (float vs uint8),
+    # mais elles devraient être négligeables (proches de 0).
+    # Convertir les deux en float pour la comparaison.
+    reconverted_np_cs50 = np.array(img_cs50_from_numpy)
+    assert np.allclose(img_np_cs50.astype(float), reconverted_np_cs50.astype(float), atol=1) # atol pour tolérance absolue
+
+    reconverted_np_cookie = np.array(img_cookie_from_numpy)
+    assert np.allclose(img_np_cookie.astype(float), reconverted_np_cookie.astype(float), atol=1)
