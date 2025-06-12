@@ -60,21 +60,24 @@ def test_load_image_file_other_unexpected_exception(mocker):
 
 def test_pil_numpy_conversion():
 
-    img_cs50 = load_image_file("test_files/cs50.jpg")
+    img_cs50_pil_original = load_image_file("test_files/cs50.jpg")
+    img_np_cs50 = pil_to_numpy(img_cs50_pil_original)
 
-    img_np = pil_to_numpy(img_cs50)
+    assert type(img_np_cs50) == np.ndarray
+    assert img_np_cs50.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
+    assert img_np_cs50.shape[2] == 3 # Doit avoir 3 canaux (RGB)
+    assert img_np_cs50.dtype == np.uint8 # Doit être de type uint8 (0-255)
 
-    # type(grocery_list)
 
-    assert type(img_np) == np.ndarray
+    img_cookie_pil_original = load_image_file("test_files/cookie_monster.webp")
+    img_np_cookie = pil_to_numpy(img_cookie_pil_original)
 
-    assert img_np.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
-    assert img_np.shape[2] == 3 # Doit avoir 3 canaux (RGB)
-    assert img_np.dtype == np.uint8 # Doit être de type uint8 (0-255)
-
-    img_cookie = load_image_file("test_files/cookie_monster.webp")
-    img_np_cookie = pil_to_numpy(img_cookie)
     assert type(img_np_cookie) == np.ndarray
     assert img_np_cookie.ndim == 3
     assert img_np_cookie.shape[2] == 3
     assert img_np_cookie.dtype == np.uint8
+
+    # test conversion back from numpy
+    img_cs50_from_numpy = numpy_to_pil(img_np_cs50)
+
+    assert img_cs50_from_numpy.mode == "RGB"
