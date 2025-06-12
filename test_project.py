@@ -67,3 +67,14 @@ def test_pil_numpy_conversion():
     # type(grocery_list)
 
     assert type(img_np) == np.ndarray
+
+    assert img_np.ndim == 3 # Doit être un tableau 3D (hauteur, largeur, canaux)
+    assert img_np.shape[2] == 3 # Doit avoir 3 canaux (RGB)
+    assert img_np.dtype == np.uint8 # Doit être de type uint8 (0-255)
+
+    img_cookie = load_image_file("test_files/cookie_monster.webp")
+    img_np_cookie = pil_to_numpy(img_cookie)
+    assert type(img_np_cookie) == np.ndarray
+    assert img_np_cookie.ndim == 3
+    assert img_np_cookie.shape[2] == 3
+    assert img_np_cookie.dtype == np.uint8
