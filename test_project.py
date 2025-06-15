@@ -189,3 +189,22 @@ def test_dct_watermark_introduces_change(sample_channel_data):
     mean_diff = np.mean(np.abs(original_channel - watermarked_channel.astype(float)))
     # Le seuil (ici 0.5) est à ajuster en fonction de ta strength et de ce qui est "perceptible"
     assert mean_diff > 0.5 # Avec strength=5, la différence devrait être notable
+
+
+def test_dct_watermark_no_change_with_zero_strength(sample_channel_data):
+    """
+    Vérifie qu'un filigrane avec strength = 0 n'introduit pratiquement aucun changement.
+    """
+    original_channel = sample_channel_data
+    strength = 0.0 # Force nulle
+    seed = 42
+
+    watermarked_channel = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed
+    )
+    
+    # Il devrait y avoir des différences MINIMES dues aux conversions float/uint8 et arrondis
+    # np.allclose est parfait ici pour gérer ces petites tolérances
+    assert np.allclose(original_channel.astype(np.uint8), watermarked_channel, atol=1)
+    # atol=1 signifie une tolérance absolue d'une unité sur les valeurs de pixel (0-255).
+    # Cela couvre les arrondis légers qui peuvent survenir.
