@@ -227,3 +227,23 @@ def test_dct_watermark_reproducibility(sample_channel_data):
 
     # Les deux résultats doivent être identiques pixel par pixel
     assert np.array_equal(watermarked_channel_1, watermarked_channel_2)
+
+
+def test_dct_watermark_different_seed_different_result(sample_channel_data):
+    """
+    Vérifie que des graines différentes produisent des résultats différents.
+    """
+    original_channel = sample_channel_data
+    strength = 7.0
+    seed1 = 123
+    seed2 = 456 # Graine différente
+
+    watermarked_channel_1 = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed1
+    )
+    watermarked_channel_2 = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed2
+    )
+
+    # Les deux résultats ne devraient PAS être identiques (sauf cas rarissimes de coïncidence de bruit)
+    assert not np.array_equal(watermarked_channel_1, watermarked_channel_2)
