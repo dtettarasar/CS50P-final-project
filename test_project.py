@@ -208,3 +208,22 @@ def test_dct_watermark_no_change_with_zero_strength(sample_channel_data):
     assert np.allclose(original_channel.astype(np.uint8), watermarked_channel, atol=1)
     # atol=1 signifie une tolérance absolue d'une unité sur les valeurs de pixel (0-255).
     # Cela couvre les arrondis légers qui peuvent survenir.
+
+
+def test_dct_watermark_reproducibility(sample_channel_data):
+    """
+    Vérifie que le filigrane est reproductible avec la même graine et la même force.
+    """
+    original_channel = sample_channel_data
+    strength = 7.0
+    seed = 123
+
+    watermarked_channel_1 = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed
+    )
+    watermarked_channel_2 = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed # Même force et même graine
+    )
+
+    # Les deux résultats doivent être identiques pixel par pixel
+    assert np.array_equal(watermarked_channel_1, watermarked_channel_2)
