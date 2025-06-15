@@ -155,8 +155,8 @@ def test_dct_watermark_output_properties(sample_channel_data):
     assert watermarked_channel.dtype == np.uint8
 
     # 2. Vérifier les dimensions
-    # assert watermarked_channel.shape == original_channel.shape
+    assert watermarked_channel.shape == original_channel.shape
 
     # 3. Vérifier que les valeurs de pixels sont dans la plage [0, 255]
-    # assert np.min(watermarked_channel) >= 0
-    # assert np.max(watermarked_channel) <= 255
+    assert np.min(watermarked_channel) >= 0
+    assert np.max(watermarked_channel) <= 255
