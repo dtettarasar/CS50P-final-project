@@ -160,3 +160,32 @@ def test_dct_watermark_output_properties(sample_channel_data):
     # 3. Vérifier que les valeurs de pixels sont dans la plage [0, 255]
     assert np.min(watermarked_channel) >= 0
     assert np.max(watermarked_channel) <= 255
+
+
+def test_dct_watermark_introduces_change(sample_channel_data):
+    """
+    Vérifie qu'un filigrane avec strength > 0 introduit bien une modification.
+    """
+    original_channel = sample_channel_data
+    strength = 5.0 # Une force non nulle
+    seed = 42
+
+    watermarked_channel = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed
+    )
+
+    # Convertir l'original en uint8 pour une comparaison plus directe si allclose échoue
+    # Ou comparer les deux en float si tu veux être très précis sur l'algorithme lui-même
+    # avant le np.clip et astype(uint8) final.
+    # Pour le test final de la fonction, on compare les uint8 résultants.
+    
+    # Il DOIT y avoir une différence significative
+    # np.array_equal est strict, allclose est tolérant.
+    # On s'attend à ce que ce ne soit PAS égal
+    assert not np.array_equal(original_channel.astype(np.uint8), watermarked_channel)
+
+    # Vérifier une différence moyenne perceptible
+    # La différence absolue moyenne entre les pixels originaux et watermarked doit être > un certain seuil
+    mean_diff = np.mean(np.abs(original_channel - watermarked_channel.astype(float)))
+    # Le seuil (ici 0.5) est à ajuster en fonction de ta strength et de ce qui est "perceptible"
+    assert mean_diff > 0.5 # Avec strength=5, la différence devrait être notable
