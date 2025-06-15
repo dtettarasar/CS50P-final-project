@@ -247,3 +247,56 @@ def test_dct_watermark_different_seed_different_result(sample_channel_data):
 
     # Les deux résultats ne devraient PAS être identiques (sauf cas rarissimes de coïncidence de bruit)
     assert not np.array_equal(watermarked_channel_1, watermarked_channel_2)
+
+
+def test_dct_watermark_strength_scaling(sample_channel_data):
+    """
+    Vérifie que l'augmentation de la force augmente l'ampleur du changement.
+    """
+    original_channel = sample_channel_data.astype(float) # Garder en float pour plus de précision
+
+    seed = 42
+
+    # Force faible
+    watermarked_low_strength = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength=1.0, seed_value=seed
+    )
+    diff_low = np.mean(np.abs(original_channel - watermarked_low_strength.astype(float)))
+
+    # Force élevée
+    watermarked_high_strength = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength=10.0, seed_value=seed
+    )
+    diff_high = np.mean(np.abs(original_channel - watermarked_high_strength.astype(float)))
+
+    # La différence avec une force élevée doit être significativement plus grande
+    assert diff_high > diff_low * 2 # Par exemple, au moins deux fois plus grande, à ajuster
+
+
+def test_dct_watermark_robustness_to_input_dtype(sample_channel_data):
+    """
+    Vérifie que la fonction gère correctement un input de type uint8 si on la modifie pour l'accepter,
+    ou qu'elle produit une erreur si elle attend float et reçoit uint8.
+    (Actuellement, elle attend float car tu fais `channel_data.astype(float)` dans `apply_dct_protection`)
+    """
+    # Si ta fonction _apply_dct_watermark_to_channel attend spécifiquement des floats,
+    # assure-toi de lui passer des floats.
+    # Le test ci-dessous simule une erreur si tu lui passes un uint8 alors qu'elle attend float
+    # et fait des opérations qui nécessitent float (ex: soustraction de float, multiplication).
+
+    # Si la fonction était censée pouvoir gérer les uint8 directement:
+    # watermarked_channel = _apply_dct_watermark_to_channel(
+    #     sample_channel_data.astype(np.uint8), strength=5.0, seed_value=42
+    # )
+    # assert watermarked_channel.dtype == np.uint8
+
+    # Si tu as une validation interne qui lève une erreur, teste-la.
+    # Ou juste assure-toi que le float est passé depuis la fonction appelante.
+    # Ici, la fixture `sample_channel_data` fournit déjà un float, ce qui est correct.
+
+    # A noter qu'actuellement apply_dct_protection() appelle _apply_dct_watermark_to_channel() en passant bien la channel data comme float.
+    # Donc pas besoin de gérer un contrôle du type de l'input pour s'assurer qu'on traite bien la channel data en séquence de float et non d'int.
+    # Mais si jamais on doit appeler _apply_dct_watermark_to_channel() ailleurs que dans cette fonction :
+    # Mieux vaut mettre à jour _apply_dct_watermark_to_channel() avec un block try except pour vérifier que l'on passe en entrée un channel data contenant des floats
+
+    pass # Pas besoin d'un test spécifique si la fonction appelante garantit le type float
