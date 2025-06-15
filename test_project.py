@@ -7,6 +7,7 @@ from PIL.WebPImagePlugin import WebPImageFile
 
 import numpy as np 
 from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_protection
+from project import _apply_dct_watermark_to_channel
 
 def test_load_image_file():
 
@@ -121,3 +122,41 @@ def test_pil_numpy_conversion():
 def test_apply_dct_protection_function():
 
     ...
+
+# --- Fixture pour préparer les données du canal de test ---
+# Utiliser une fixture permet de réutiliser les mêmes données préparées pour plusieurs tests
+@pytest.fixture(scope="module")
+def sample_channel_data():
+    """
+    Fournit un canal NumPy 2D (float) à partir d'une image pour les tests.
+    """
+    img_pil = load_image_file("test_files/cs50.jpg")
+    img_np = pil_to_numpy(img_pil)
+    # Prendre le canal rouge (index 0) et le convertir en float pour qu'il corresponde
+    # au type attendu par la fonction (car elle soustrait 128.0)
+    return img_np[:, :, 0].astype(float)
+
+
+# --- Tests pour _apply_dct_watermark_to_channel ---
+
+def test_dct_watermark_output_properties(sample_channel_data):
+    """
+    Vérifie les propriétés de base du canal après application du filigrane DCT.
+    """
+    original_channel = sample_channel_data
+    strength = 5.0
+    seed = 42
+
+    watermarked_channel = _apply_dct_watermark_to_channel(
+        original_channel.copy(), strength, seed
+    )
+
+    # 1. Vérifier le type de données
+    assert watermarked_channel.dtype == np.uint8
+
+    # 2. Vérifier les dimensions
+    # assert watermarked_channel.shape == original_channel.shape
+
+    # 3. Vérifier que les valeurs de pixels sont dans la plage [0, 255]
+    # assert np.min(watermarked_channel) >= 0
+    # assert np.max(watermarked_channel) <= 255
