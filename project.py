@@ -371,6 +371,8 @@ def verify_image_protection(img_protected, img_original, verbose_mode=False):
         logging.info(f"init verify_image_protection")
         logging.info(f"img_protected: {img_protected}")
         logging.info(f"img_original: {img_original}")
+
+    
     
 
 if __name__ == "__main__":
