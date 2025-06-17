@@ -30,20 +30,16 @@ def main():
         secure_img(args.input, args.output, args.strength, args.verbose)
 
     elif args.command == 'verify':
-        print(f"Vérification de l'image : {args.input}")
-        if args.output_report:
-            print(f"Rapport sauvegardé sous : {args.output_report}")
-        if args.strict_mode:
-            print("Mode strict de vérification activé.")
-            
-        # todo
-        # appeler la fonction de vérification réelle
-        # if os.path.exists(args.input):
-        #     # Appeler la fonction de vérification
-        #     # result = verify_image_protection(args.input, args.strict_mode)
-        #     # Print ou save result
-        # else:
-        #     print(f"Erreur: Le fichier d'entrée '{args.input}' n'existe pas.")
+        
+        # Récupération des chemins des images depuis les arguments
+        protected_input_path = args.protected_input
+        original_input_path = args.original_input
+        output_report_path = args.output_report
+
+        # strict_mode = args.strict_mode # A Garder pour une future implémentation si besoin
+
+        logging.info(f"Image protégée à vérifier : {protected_input_path}")
+        logging.info(f"Image originale pour comparaison : {original_input_path}")
 
 
 def load_image_file(img_path):
@@ -205,17 +201,30 @@ def load_parser():
         """
     )
     verify_parser.add_argument(
-        '--input', 
-        '-i', 
-        type=str, 
-        required=True, 
-        help='path for the image file to verify (ex: image_protected.jpg).'
+        '--protected-input', # Nom plus explicite pour l'image protégée
+        '-p',                # Raccourci pour 'protected'
+        type=str,
+        required=True,
+        help='Path for the protected image file to verify (ex: image_protected.jpg).'
+    )
+    verify_parser.add_argument(
+        '--original-input',  # Nouvel argument pour l'image originale
+        '-o',                # Raccourci pour 'original'
+        type=str,
+        required=True,
+        help='Path for the original, unprotected image file for comparison (ex: image_original.jpg).'
     )
     verify_parser.add_argument(
         '--output-report', # Pourrait générer un rapport
         '-r', 
         type=str, 
         help='path for the report file to save (optionnal).'
+    )
+    verify_parser.add_argument(
+        '--verbose',
+        '-v',
+        action='store_true', # stocke True si l'argument est présent
+        help='Enables verbose mode for additional debugging information.'
     )
     # Exemple d'autres arguments pour la vérification
     verify_parser.add_argument(
