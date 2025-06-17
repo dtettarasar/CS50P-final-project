@@ -41,6 +41,8 @@ def main():
         logging.info(f"Image protégée à vérifier : {protected_input_path}")
         logging.info(f"Image originale pour comparaison : {original_input_path}")
 
+        verify_image_protection(protected_input_path, original_input_path, args.verbose)
+
 
 def load_image_file(img_path):
 
@@ -367,6 +369,8 @@ def verify_image_protection(img_protected, img_original, verbose_mode=False):
 
     if verbose_mode:
         logging.info(f"init verify_image_protection")
+        logging.info(f"img_protected: {img_protected}")
+        logging.info(f"img_original: {img_original}")
     
 
 if __name__ == "__main__":
