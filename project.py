@@ -200,6 +200,8 @@ def load_parser():
         description="""
         This command analyzes an image to detect the presence of
         protections and verify its integrity via digital signatures or hashes.
+        For this version, it compares a protected image against its original
+        to measure the alteration level.
         """
     )
     verify_parser.add_argument(
@@ -350,6 +352,12 @@ def apply_dct_protection(img_np, strength, verbose_mode=False):
         logging.info("DCT protection applied to all channels.")
     
     return processed_image_np
+
+
+def verify_image_protection(img_protected, img_original, verbose_mode=False):
+
+    if verbose_mode:
+        logging.info(f"init verify_image_protection")
     
 
 if __name__ == "__main__":
