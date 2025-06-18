@@ -1,3 +1,4 @@
+import os
 import pytest
 
 import PIL
@@ -8,6 +9,7 @@ from PIL.WebPImagePlugin import WebPImageFile
 import numpy as np 
 from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_protection
 from project import _apply_dct_watermark_to_channel
+from project import calculate_image_metrics
 
 def test_load_image_file():
 
@@ -300,3 +302,31 @@ def test_dct_watermark_robustness_to_input_dtype(sample_channel_data):
     # Mieux vaut mettre à jour _apply_dct_watermark_to_channel() avec un block try except pour vérifier que l'on passe en entrée un channel data contenant des floats
 
     pass # Pas besoin d'un test spécifique si la fonction appelante garantit le type float
+
+def test_calculate_metrics_file_not_found_protected():
+    """
+    Vérifie que la fonction lève FileNotFoundError si l'image protégée n'existe pas.
+    """
+    non_existent_protected_path = "test_files/non_existent_protected.jpg"
+    existing_original_path = "test_files/cs50.jpg" # Assure-toi que ce fichier existe pour le test
+
+    # On s'attend précisément à une FileNotFoundError
+    with pytest.raises(FileNotFoundError):
+        calculate_image_metrics(non_existent_protected_path, existing_original_path)
+
+
+def test_calculate_metrics_file_not_found_original():
+    """
+    Vérifie que la fonction lève FileNotFoundError si l'image originale n'existe pas.
+    """
+    # Crée un fichier "protégé" temporaire qui existe pour ce test
+    temp_protected_path = "test_files/temp_protected_for_test.jpg"
+    Image.new('RGB', (10, 10)).save(temp_protected_path) # Crée une petite image bidon
+
+    non_existent_original_path = "test_files/non_existent_original.png"
+
+    # On s'attend précisément à une FileNotFoundError
+    with pytest.raises(FileNotFoundError):
+        calculate_image_metrics(temp_protected_path, non_existent_original_path)
+
+    os.remove(temp_protected_path) # Nettoyage

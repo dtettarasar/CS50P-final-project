@@ -1,5 +1,5 @@
 import PIL
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import os
 import sys
 import logging
@@ -41,7 +41,7 @@ def main():
         logging.info(f"Image protégée à vérifier : {protected_input_path}")
         logging.info(f"Image originale pour comparaison : {original_input_path}")
 
-        verify_image_protection(protected_input_path, original_input_path, args.verbose)
+        calculate_image_metrics(protected_input_path, original_input_path, args.verbose)
 
 
 def load_image_file(img_path):
@@ -79,9 +79,9 @@ def load_image_file(img_path):
         
         return img_pil
 
-    except PIL.UnidentifiedImageError:
+    except UnidentifiedImageError:
         # Cette exception est levée par Pillow si le fichier n'est pas une image valide
-        raise PIL.UnidentifiedImageError(f"Unable to identify or open image file '{img_path}'. Check format or corruption.")
+        raise UnidentifiedImageError(f"Unable to identify or open image file '{img_path}'. Check format or corruption.")
     
     except Exception as e:
         # Capture toute autre erreur inattendue lors de l'ouverture du fichier
@@ -128,7 +128,7 @@ def secure_img(input_path, output_path, strength, verbose_mode):
         logging.info(f"Protected image saved successfully to '{output_path}'.")
 
 
-    except (FileNotFoundError, PIL.UnidentifiedImageError, IOError) as e:
+    except (FileNotFoundError, UnidentifiedImageError, IOError) as e:
         # Ces exceptions sont levées par load_image_file
         logging.error(f"Error during image processing for secure command: {e}")
         sys.exit(1) # Quitter le programme avec un code d'erreur
@@ -365,14 +365,24 @@ def apply_dct_protection(img_np, strength, verbose_mode=False):
     return processed_image_np
 
 
-def verify_image_protection(img_protected, img_original, verbose_mode=False):
+def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=False):
+
+    """
+    Calcule des métriques de différence entre une image protégée et son originale.
+    Lève des exceptions spécifiques en cas d'erreur (FileNotFoundError, UnidentifiedImageError, ValueError).
+    """
 
     if verbose_mode:
         logging.info(f"init verify_image_protection")
-        logging.info(f"img_protected: {img_protected}")
-        logging.info(f"img_original: {img_original}")
+        logging.info(f"Starting verification of '{img_protected_path}' against original '{img_original_path}'")
 
-    
+    try:
+        img_pil_protected = load_image_file(img_protected_path)
+        img_pil_original = load_image_file(img_original_path)
+    except (FileNotFoundError, UnidentifiedImageError, IOError) as e:
+        # On loggue l'erreur pour le débogage, puis on la relève.
+        logging.error(f"Error loading image for verification: {e}")
+        raise # Rélève l'exception originale
     
 
 if __name__ == "__main__":
