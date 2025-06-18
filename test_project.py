@@ -365,3 +365,15 @@ def test_calculate_metrics_invalid_image_format_original():
     os.remove(invalid_original_path) # Nettoyage
 
 # todo : test pour ValueError en cas de dimensions différentes entre les deux images.
+
+def test_calculate_metrics_different_dimensions():
+
+    """
+    Vérifie que la fonction retourne bien une ValueError si les deux images n'ont pas la même dimension
+    """
+
+    protected_image_path = "test_files/cs50.jpg"
+    original_image_path = "test_files/cookie_monster.webp"
+
+    with pytest.raises(ValueError):
+        calculate_image_metrics(protected_image_path, original_image_path)

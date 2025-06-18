@@ -384,6 +384,17 @@ def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=
         logging.error(f"Error loading image for verification: {e}")
         raise # Rélève l'exception originale
     
+    img_np_protected = pil_to_numpy(img_pil_protected)
+    img_np_original = pil_to_numpy(img_pil_original)
+
+    # Vérification des dimensions
+    if img_np_protected.shape != img_np_original.shape:
+        logging.error("Images have different dimensions. Cannot compare.")
+        # Lève une ValueError si les dimensions ne correspondent pas,
+        # car c'est une condition qui empêche le calcul.
+        raise ValueError("Protected and original images must have the same dimensions for comparison.")
+    
+    
 
 if __name__ == "__main__":
     main()
