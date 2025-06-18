@@ -363,3 +363,5 @@ def test_calculate_metrics_invalid_image_format_original():
         calculate_image_metrics(protected_image_path, invalid_original_path)
 
     os.remove(invalid_original_path) # Nettoyage
+
+# todo : test pour ValueError en cas de dimensions différentes entre les deux images.
