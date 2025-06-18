@@ -375,5 +375,5 @@ def test_calculate_metrics_different_dimensions():
     protected_image_path = "test_files/cs50.jpg"
     original_image_path = "test_files/cookie_monster.webp"
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="^Protected and original images must have the same dimensions for comparison.$"):
         calculate_image_metrics(protected_image_path, original_image_path)
