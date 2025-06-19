@@ -338,14 +338,16 @@ def test_calculate_metrics_file_not_found_original():
 
 def test_calculate_metrics_invalid_image_format_protected():
     """
-    Vérifie que la fonction lève UnidentifiedImageError pour un format invalide (image protégée).
+    Vérifie que la fonction lève UnidentifiedImageError avec le message correct
+    pour un format invalide de l'image protégée.
     """
     invalid_image_path = "test_files/output_files/description.txt"
     
     existing_original_path = "test_files/cs50.jpg"
 
-    # On s'attend précisément à une UnidentifiedImageError
-    with pytest.raises(UnidentifiedImageError):
+    # Le message de UnidentifiedImageError est souvent générique, comme "cannot identify image file".
+    # Utilise une regex qui correspond à ce type de message.
+    with pytest.raises(UnidentifiedImageError, match=r".*Unable to identify or open image file*"):
         calculate_image_metrics(invalid_image_path, existing_original_path)
 
 
