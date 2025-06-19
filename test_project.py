@@ -321,7 +321,7 @@ def test_calculate_metrics_file_not_found_protected():
 
 def test_calculate_metrics_file_not_found_original():
     """
-    Vérifie que la fonction lève FileNotFoundError si l'image originale n'existe pas.
+    Vérifie que la fonction lève FileNotFoundError avec le message correct, si l'image originale n'existe pas.
     """
     # Crée un fichier "protégé" temporaire qui existe pour ce test
     temp_protected_path = "test_files/temp_protected_for_test.jpg"
@@ -329,8 +329,8 @@ def test_calculate_metrics_file_not_found_original():
 
     non_existent_original_path = "test_files/non_existent_original.png"
 
-    # On s'attend précisément à une FileNotFoundError
-    with pytest.raises(FileNotFoundError):
+    # On s'attend à FileNotFoundError et on vérifie le nom du fichier original dans le message.
+    with pytest.raises(FileNotFoundError, match=f".*{non_existent_original_path}.*"):
         calculate_image_metrics(temp_protected_path, non_existent_original_path)
 
     os.remove(temp_protected_path) # Nettoyage
