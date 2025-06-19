@@ -305,13 +305,17 @@ def test_dct_watermark_robustness_to_input_dtype(sample_channel_data):
 
 def test_calculate_metrics_file_not_found_protected():
     """
-    Vérifie que la fonction lève FileNotFoundError si l'image protégée n'existe pas.
+    Vérifie que la fonction lève FileNotFoundError avec le message correct, si l'image protégée n'existe pas.
     """
     non_existent_protected_path = "test_files/non_existent_protected.jpg"
     existing_original_path = "test_files/cs50.jpg" # Assure-toi que ce fichier existe pour le test
 
-    # On s'attend précisément à une FileNotFoundError
-    with pytest.raises(FileNotFoundError):
+    # On s'attend à FileNotFoundError et on vérifie une partie du message.
+    # /!\ Le message exact de FileNotFoundError peut varier légèrement selon l'OS ou la version de Python,
+    # Donc utiliser une regex plus flexible est souvent plus sûr.
+    # Ici, on va cibler le nom du fichier.
+
+    with pytest.raises(FileNotFoundError, match=f".*{non_existent_protected_path}.*"):
         calculate_image_metrics(non_existent_protected_path, existing_original_path)
 
 
