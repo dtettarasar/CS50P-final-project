@@ -336,9 +336,9 @@ def test_calculate_metrics_invalid_image_format_protected():
     """
     Vérifie que la fonction lève UnidentifiedImageError pour un format invalide (image protégée).
     """
-    invalid_image_path = "test_files/not_an_image.txt"
-    with open(invalid_image_path, "w") as f:
-        f.write("Ceci n'est pas une image, c'est du texte.")
+    invalid_image_path = "test_files/output_files/description.txt"
+    # with open(invalid_image_path, "w") as f:
+        # f.write("Ceci n'est pas une image, c'est du texte.")
     
     existing_original_path = "test_files/cs50.jpg"
 
@@ -346,7 +346,7 @@ def test_calculate_metrics_invalid_image_format_protected():
     with pytest.raises(UnidentifiedImageError):
         calculate_image_metrics(invalid_image_path, existing_original_path)
 
-    os.remove(invalid_image_path) # Nettoyage
+    # os.remove(invalid_image_path) # Nettoyage
 
 
 def test_calculate_metrics_invalid_image_format_original():

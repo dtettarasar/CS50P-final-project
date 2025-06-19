@@ -395,6 +395,8 @@ def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=
         raise ValueError("Protected and original images must have the same dimensions for comparison.")
     
     
+    
+    
 
 if __name__ == "__main__":
     main()
