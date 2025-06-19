@@ -341,19 +341,23 @@ def test_calculate_metrics_invalid_image_format_protected():
     Vérifie que la fonction lève UnidentifiedImageError avec le message correct
     pour un format invalide de l'image protégée.
     """
-    invalid_image_path = "test_files/output_files/description.txt"
+    invalid_image_path = "test_files/not_an_image.txt"
+    with open(invalid_image_path, "w") as f:
+        f.write("Ceci n'est pas une image, c'est du texte.")
     
     existing_original_path = "test_files/cs50.jpg"
 
     # Le message de UnidentifiedImageError est souvent générique, comme "cannot identify image file".
     # Utilise une regex qui correspond à ce type de message.
-    with pytest.raises(UnidentifiedImageError, match=r".*Unable to identify or open image file*"):
+    with pytest.raises(UnidentifiedImageError, match=r".*Unable to identify or open image file 'test_files/not_an_image.txt'*"):
         calculate_image_metrics(invalid_image_path, existing_original_path)
 
+    os.remove(invalid_image_path)
 
 def test_calculate_metrics_invalid_image_format_original():
     """
-    Vérifie que la fonction lève UnidentifiedImageError pour un format invalide (image originale).
+    Vérifie que la fonction lève UnidentifiedImageError avec le message correct
+    pour un format invalide de l'image originale.
     """
     protected_image_path = "test_files/cs50.jpg"
     invalid_original_path = "test_files/not_an_original_image.doc"
@@ -361,7 +365,7 @@ def test_calculate_metrics_invalid_image_format_original():
         f.write("Doc doc doc doc.")
 
     # On s'attend précisément à une UnidentifiedImageError
-    with pytest.raises(UnidentifiedImageError):
+    with pytest.raises(UnidentifiedImageError, match=r".*Unable to identify or open image file 'test_files/not_an_original_image.doc'*"):
         calculate_image_metrics(protected_image_path, invalid_original_path)
 
     os.remove(invalid_original_path) # Nettoyage
