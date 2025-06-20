@@ -424,8 +424,8 @@ def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=
 
     result['psnr'] = psnr
 
-    print('result: ')
-    print(result)
+    # print('result: ')
+    # print(result)
 
     return result
 
