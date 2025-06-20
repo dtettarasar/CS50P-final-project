@@ -504,5 +504,32 @@ def test_apply_dct_protection_converts_and_modifies_grayscale_1_channel_image(sa
     assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
 
 
+def test_apply_dct_protection_unsupported_channel_count():
+    """
+    Vérifie que la fonction lève une ValueError pour des images avec un nombre
+    de canaux non supporté (ex: 2 ou 4 canaux sans être une RGBA standard reconnue).
+    """
+    # Créer une image NumPy avec 2 canaux (exemple de format non supporté par la logique actuelle)
+    # Imaginons une image (Hauteur, Largeur, 2)
+    unsupported_2_channel_image = np.full((10, 10, 2), 100, dtype=np.uint8)
+
+    # Créer une image NumPy avec 4 canaux, mais on assume que ta fonction
+    # ne la traite pas comme une RGBA si la logique pour RGBA n'est pas encore implémentée.
+    # Si tu décides de supporter RGBA plus tard, ce test devra être modifié.
+    # Pour l'instant, on la traite comme un "cas non supporté" si non explicitement gérée.
+    unsupported_4_channel_image = np.full((10, 10, 4), 100, dtype=np.uint8)
+
+
+    # Test pour 2 canaux
+    with pytest.raises(ValueError, match="^Unsupported image format: must be grayscale \\(1-channel\\) or RGB/BGR \\(3-channel\\).$"):
+        apply_dct_protection(unsupported_2_channel_image, strength=5.0)
+
+    # Test pour 4 canaux (si non géré comme RGBA spécifique)
+    # Note : Si plus tard tu adaptes ta fonction pour traiter 4 canaux (RGBA),
+    # ce test devra être ajusté ou supprimé pour ce cas.
+    # with pytest.raises(ValueError, match="^Unsupported image format: must be grayscale \\(1-channel\\) or RGB/BGR \\(3-channel\\).$"):
+        #apply_dct_protection(unsupported_4_channel_image, strength=5.0)
+
+
 # End of test apply_dct_protection()------------------------------
 
