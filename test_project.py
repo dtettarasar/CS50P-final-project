@@ -11,7 +11,7 @@ from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_prote
 from project import _apply_dct_watermark_to_channel
 from project import calculate_image_metrics
 
-# Test load_image_file()
+# Test load_image_file()------------------------------
 
 def test_load_image_file():
 
@@ -79,7 +79,7 @@ def test_load_image_file_other_unexpected_exception(mocker):
     assert "An unexpected error occurred while opening the image" in str(excinfo.value)
 
 
-# End of test load_image_file()
+# End of test load_image_file()------------------------------
 
 def test_pil_numpy_conversion():
 
@@ -144,7 +144,7 @@ def sample_channel_data():
     return img_np[:, :, 0].astype(float)
 
 
-# --- Tests pour _apply_dct_watermark_to_channel ---
+# Test _apply_dct_watermark_to_channel()------------------------------
 
 def test_dct_watermark_output_properties(sample_channel_data):
     """
@@ -308,6 +308,10 @@ def test_dct_watermark_robustness_to_input_dtype(sample_channel_data):
 
     pass # Pas besoin d'un test spécifique si la fonction appelante garantit le type float
 
+# End of test _apply_dct_watermark_to_channel()------------------------------
+
+# Test calculate_image_metrics()------------------------------
+
 def test_calculate_metrics_file_not_found_protected():
     """
     Vérifie que la fonction lève FileNotFoundError avec le message correct, si l'image protégée n'existe pas.
@@ -403,4 +407,6 @@ def test_calculate_matrics_same_image():
 
     assert result["mse"] == np.float32(0.0)
     assert result["psnr"] == float('inf')
+
+# End of test calculate_image_metrics()------------------------------
      
