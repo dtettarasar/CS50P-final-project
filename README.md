@@ -52,5 +52,5 @@ python project.py secure --input image.jpg --output image_protected.jpg
 2. Test image protection
 
 ```
-python project.py test --input image_protected.jpg --reference image.jpg
+python project.py verify -p img_protected.jpg -o img_original.jpg
 ```
