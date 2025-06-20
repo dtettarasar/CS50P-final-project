@@ -1,5 +1,6 @@
 import os
 import pytest
+import logging
 
 import PIL
 from PIL import Image, UnidentifiedImageError
@@ -421,8 +422,15 @@ def sample_rgb_image_np():
 @pytest.fixture
 def sample_grayscale_image_np():
     """Fixture qui fournit une image NumPy en niveaux de gris simple pour les tests."""
-    # Créer une image 3x3 en niveaux de gris
+    # Une image 3x3 en niveaux de gris
     return np.full((3, 3), 100, dtype=np.uint8)
+
+@pytest.fixture
+def sample_grayscale_image_np_1_channel():
+    """Fixture qui fournit une image NumPy en niveaux de gris avec 1 canal explicite (H, W, 1)."""
+    # Une image 3x3 avec un canal explicite
+    return np.full((3, 3, 1), 100, dtype=np.uint8)
+
 
 def test_apply_dct_protection_returns_numpy_array(sample_rgb_image_np):
     """Vérifie que la fonction retourne bien un tableau NumPy."""
@@ -444,6 +452,57 @@ def test_apply_dct_protection_modifies_image(sample_rgb_image_np):
 
     # Vérifie que les valeurs des pixels restent dans une plage raisonnable (0-255)
     assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
+
+
+def test_apply_dct_protection_converts_and_modifies_grayscale_2d_image(sample_grayscale_image_np, caplog):
+    """
+    Vérifie que la fonction convertit une image 2D niveaux de gris en 3 canaux et lui applique la protection.
+    """
+    caplog.set_level(logging.WARNING) # Attendre un WARNING pour la conversion
+
+    initial_shape = sample_grayscale_image_np.shape # (H, W)
+    
+    protected_img_np = apply_dct_protection(sample_grayscale_image_np, strength=5.0, verbose_mode=True)
+    
+    # 1. Vérifie que le message d'avertissement de conversion a été loggé
+    assert "Input is a grayscale image. Converting to 3 channels (RGB) for DCT protection." in caplog.text
+    
+    # 2. Vérifie que l'image de sortie est maintenant en 3 canaux
+    assert protected_img_np.shape == (initial_shape[0], initial_shape[1], 3)
+    
+    # 3. Vérifie que l'image a bien été modifiée (elle n'est plus identique à l'originale si traitée)
+    # Pour cela, il faut 're-convertir' l'originale en 3 canaux pour la comparaison ou faire une vérif sur un canal
+    # Ici, je compare avec l'originale empilée en 3 canaux.
+    original_3_channels = np.stack([sample_grayscale_image_np, sample_grayscale_image_np, sample_grayscale_image_np], axis=-1)
+    assert not np.array_equal(original_3_channels, protected_img_np)
+    
+    # 4. Vérifie que les valeurs de pixels restent dans la plage 0-255
+    assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
+    
+
+def test_apply_dct_protection_converts_and_modifies_grayscale_1_channel_image(sample_grayscale_image_np_1_channel, caplog):
+    """
+    Vérifie que la fonction convertit une image 1-canal niveaux de gris en 3 canaux et lui applique la protection.
+    """
+    caplog.set_level(logging.WARNING) # Attendre un WARNING pour la conversion
+
+    initial_shape = sample_grayscale_image_np_1_channel.shape # (H, W, 1)
+    
+    protected_img_np = apply_dct_protection(sample_grayscale_image_np_1_channel, strength=5.0, verbose_mode=True)
+    
+    # 1. Vérifie que le message d'avertissement de conversion a été loggé
+    assert "Input is a 1-channel image. Converting to 3 channels (RGB) for DCT protection." in caplog.text
+    
+    # 2. Vérifie que l'image de sortie est maintenant en 3 canaux
+    assert protected_img_np.shape == (initial_shape[0], initial_shape[1], 3)
+    
+    # 3. Vérifie que l'image a bien été modifiée
+    original_3_channels = np.repeat(sample_grayscale_image_np_1_channel, 3, axis=2)
+    assert not np.array_equal(original_3_channels, protected_img_np)
+    
+    # 4. Vérifie que les valeurs de pixels restent dans la plage 0-255
+    assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
+
 
 # End of test apply_dct_protection()------------------------------
 
