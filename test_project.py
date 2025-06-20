@@ -435,5 +435,15 @@ def test_apply_dct_protection_returns_same_shape(sample_rgb_image_np):
     protected_img_np = apply_dct_protection(sample_rgb_image_np, strength=5.0)
     assert protected_img_np.shape == original_shape
 
+def test_apply_dct_protection_modifies_image(sample_rgb_image_np):
+    """Vérifie que la protection modifie réellement les pixels de l'image."""
+    
+    protected_img_np = apply_dct_protection(sample_rgb_image_np, strength=5.0)
+    # Assure-toi qu'au moins un pixel est différent
+    assert not np.array_equal(sample_rgb_image_np, protected_img_np)
+
+    # Vérifie que les valeurs des pixels restent dans une plage raisonnable (0-255)
+    assert np.all(protected_img_np >= 0) and np.all(protected_img_np <= 255)
+
 # End of test apply_dct_protection()------------------------------
 
