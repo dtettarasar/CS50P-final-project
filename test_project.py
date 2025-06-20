@@ -429,5 +429,11 @@ def test_apply_dct_protection_returns_numpy_array(sample_rgb_image_np):
     protected_img_np = apply_dct_protection(sample_rgb_image_np, strength=5.0)
     assert isinstance(protected_img_np, np.ndarray)
 
+def test_apply_dct_protection_returns_same_shape(sample_rgb_image_np):
+    """Vérifie que l'image traitée a les mêmes dimensions que l'originale."""
+    original_shape = sample_rgb_image_np.shape
+    protected_img_np = apply_dct_protection(sample_rgb_image_np, strength=5.0)
+    assert protected_img_np.shape == original_shape
+
 # End of test apply_dct_protection()------------------------------
 
