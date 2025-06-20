@@ -394,9 +394,40 @@ def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=
         # car c'est une condition qui empêche le calcul.
         raise ValueError("Protected and original images must have the same dimensions for comparison.")
     
+    # Convertir en float pour les calculs de différence
+    img_np_protected_float = img_np_protected.astype(np.float32)
+    img_np_original_float = img_np_original.astype(np.float32)
+
+    # print('img_np_protected: ')
+    # print(img_np_protected)
+
+    # print('img_np_protected_float: ')
+    # print(img_np_protected_float)
+
+    result = dict()
     
-    
-    
+    # Calculer le MSE
+    mse = np.mean((img_np_protected_float - img_np_original_float) ** 2)
+
+    result['mse'] = mse
+
+    # Calculer le PSNR
+    if mse == 0:
+        psnr = float('inf')
+    else:
+        MAX_I = 255.0
+        psnr = 10 * np.log10(MAX_I**2 / mse)
+
+    if verbose_mode:
+        logging.debug(f"MSE: {mse:.2f}")
+        logging.info(f"Calculated PSNR: {psnr:.2f} dB")
+
+    result['psnr'] = psnr
+
+    print('result: ')
+    print(result)
+
+    return result
 
 if __name__ == "__main__":
     main()
