@@ -409,4 +409,25 @@ def test_calculate_matrics_same_image():
     assert result["psnr"] == float('inf')
 
 # End of test calculate_image_metrics()------------------------------
-     
+
+# Test apply_dct_protection()------------------------------
+
+@pytest.fixture
+def sample_rgb_image_np():
+    """Fixture qui fournit une image NumPy RGB simple pour les tests."""
+    # Créer une image 3x3 RGB, remplie de 100
+    return np.full((3, 3, 3), 100, dtype=np.uint8)
+
+@pytest.fixture
+def sample_grayscale_image_np():
+    """Fixture qui fournit une image NumPy en niveaux de gris simple pour les tests."""
+    # Créer une image 3x3 en niveaux de gris
+    return np.full((3, 3), 100, dtype=np.uint8)
+
+def test_apply_dct_protection_returns_numpy_array(sample_rgb_image_np):
+    """Vérifie que la fonction retourne bien un tableau NumPy."""
+    protected_img_np = apply_dct_protection(sample_rgb_image_np, strength=5.0)
+    assert isinstance(protected_img_np, np.ndarray)
+
+# End of test apply_dct_protection()------------------------------
+
