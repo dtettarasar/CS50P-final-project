@@ -383,3 +383,19 @@ def test_calculate_metrics_different_dimensions():
 
     with pytest.raises(ValueError, match="^Protected and original images must have the same dimensions for comparison.$"):
         calculate_image_metrics(protected_image_path, original_image_path)
+
+
+def test_calculate_matrics_same_image():
+
+    """
+    Vérifie que l'on a bien les résultats attendus si l'on passe exactement le même fichier, en tant qu'image original et image protégé
+    """
+
+    protected_image_path = "test_files/cs50.jpg"
+    original_image_path = "test_files/cs50.jpg"
+
+    result = calculate_image_metrics(protected_image_path, original_image_path)
+
+    assert result["mse"] == np.float32(0.0)
+    assert result["psnr"] == float('inf')
+     
