@@ -418,14 +418,13 @@ def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=
         MAX_I = 255.0
         psnr = 10 * np.log10(MAX_I**2 / mse)
 
-    if verbose_mode:
-        logging.debug(f"MSE: {mse:.2f}")
-        logging.info(f"Calculated PSNR: {psnr:.2f} dB")
-
     result['psnr'] = psnr
 
-    # print('result: ')
-    # print(result)
+    if verbose_mode:
+        logging.debug("result dict: ")
+        logging.debug(result)
+        logging.debug(f"MSE: {mse:.2f}")
+        logging.info(f"Calculated PSNR: {psnr:.2f} dB")
 
     return result
 

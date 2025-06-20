@@ -11,6 +11,8 @@ from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_prote
 from project import _apply_dct_watermark_to_channel
 from project import calculate_image_metrics
 
+# Test load_image_file()
+
 def test_load_image_file():
 
     img_cs50 = load_image_file("test_files/cs50.jpg")
@@ -75,6 +77,9 @@ def test_load_image_file_other_unexpected_exception(mocker):
 
     assert "Something really bad happened!" in str(excinfo.value)
     assert "An unexpected error occurred while opening the image" in str(excinfo.value)
+
+
+# End of test load_image_file()
 
 def test_pil_numpy_conversion():
 
