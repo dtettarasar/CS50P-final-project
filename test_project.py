@@ -563,7 +563,46 @@ def test_secure_img_successful_protection(temp_valid_image, temp_output_path):
     # Vérifie que ce n'est pas le même fichier que l'entrée (c'est une nouvelle image)
     assert os.path.getsize(temp_output_path) > 0
 
-# End of test secure_img()------------------------------
 
+def test_secure_img_file_not_found(temp_output_path, caplog):
+    """Vérifie que la fonction gère FileNotFoundError pour l'image d'entrée."""
+    caplog.set_level(logging.ERROR) # Capture les logs d'erreur
+
+    non_existent_path = "non_existent_input.jpg"
+    
+    # On s'attend à ce que sys.exit(1) soit appelé
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        secure_img(non_existent_path, str(temp_output_path), strength=5.0, verbose_mode=False)
+    
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 1 # Vérifie le code de sortie
+    
+    # Vérifie que le message d'erreur a été loggé
+    assert "Error during image processing for secure command:" in caplog.text
+    assert f"'{non_existent_path}'" in caplog.text # Le chemin devrait être dans le message
+
+
+def test_secure_img_invalid_image_format(temp_output_path, caplog):
+    """Vérifie que la fonction gère UnidentifiedImageError pour un format invalide."""
+    caplog.set_level(logging.ERROR)
+
+    invalid_format_path = "test_files/not_an_image.txt"
+    with open(invalid_format_path, "w") as f:
+        f.write("Ceci n'est pas une image.")
+    
+    # On s'attend à ce que sys.exit(1) soit appelé
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        secure_img(invalid_format_path, str(temp_output_path), strength=5.0, verbose_mode=False)
+
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 1
+
+    # Vérifie le message de log
+    assert "Error during image processing for secure command:" in caplog.text
+    assert "Unable to identify or open image file 'test_files/not_an_image.txt'" in caplog.text 
+
+    os.remove(invalid_format_path) # Nettoyage
+
+# End of test secure_img()------------------------------
 
 
