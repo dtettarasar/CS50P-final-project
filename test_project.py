@@ -7,10 +7,12 @@ from PIL import Image, UnidentifiedImageError
 from PIL.JpegImagePlugin import JpegImageFile
 from PIL.WebPImagePlugin import WebPImageFile
 
-import numpy as np 
+import numpy as np
+
 from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_protection
 from project import _apply_dct_watermark_to_channel
 from project import calculate_image_metrics
+from project import secure_img
 
 # Test load_image_file()------------------------------
 
@@ -532,4 +534,36 @@ def test_apply_dct_protection_unsupported_channel_count():
 
 
 # End of test apply_dct_protection()------------------------------
+
+# Test secure_img()------------------------------
+
+# Fixture pour un fichier image valide temporaire
+@pytest.fixture
+def temp_valid_image(tmp_path):
+    """Crée un fichier image temporaire valide pour les tests."""
+    img_path = tmp_path / "test_input.png"
+    Image.new('RGB', (10, 10), color = 'red').save(img_path)
+    return img_path
+
+# Fixture pour un chemin de fichier de sortie temporaire
+@pytest.fixture
+def temp_output_path(tmp_path):
+    """Fournit un chemin de fichier de sortie temporaire."""
+    return tmp_path / "test_output.png"
+
+def test_secure_img_successful_protection(temp_valid_image, temp_output_path):
+    """Vérifie que la fonction protège et sauvegarde une image avec succès."""
+    # S'assurer que le fichier de sortie n'existe pas avant le test
+    assert not temp_output_path.exists()
+
+    secure_img(str(temp_valid_image), str(temp_output_path), strength=5.0, verbose_mode=False)
+
+    # Vérifie que le fichier de sortie a été créé
+    assert temp_output_path.exists()
+    # Vérifie que ce n'est pas le même fichier que l'entrée (c'est une nouvelle image)
+    assert os.path.getsize(temp_output_path) > 0
+
+# End of test secure_img()------------------------------
+
+
 
