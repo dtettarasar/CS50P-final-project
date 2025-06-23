@@ -41,7 +41,9 @@ def main():
         logging.info(f"Image protégée à vérifier : {protected_input_path}")
         logging.info(f"Image originale pour comparaison : {original_input_path}")
 
-        calculate_image_metrics(protected_input_path, original_input_path, args.verbose)
+        img_metrics = calculate_image_metrics(protected_input_path, original_input_path, args.verbose)
+
+        show_result(img_metrics, protected_input_path, original_input_path, output_report_path)
 
 
 def load_image_file(img_path):
@@ -479,6 +481,40 @@ def calculate_image_metrics(img_protected_path, img_original_path, verbose_mode=
         logging.info(f"Calculated PSNR: {psnr:.2f} dB")
 
     return result
+
+def show_result(result, protected_input_path, original_input_path, output_report_path=None):
+
+    psnr_value = result['psnr']
+    mse_value = result['mse']
+
+    # Affichage des résultats
+    if psnr_value is not None:
+        print(f"\n--- Résultats de la vérification ---")
+        print(f"PSNR (Peak Signal-to-Noise Ratio) : {psnr_value:.2f} dB")
+        print(f"MSE (Mean Squared Error) : {mse_value:.2f}")
+        print(f"-----------------------------------\n")
+
+        if psnr_value < 30: # Un seuil indicatif, à ajuster
+            print("L'image protégée présente des altérations significatives par rapport à l'originale (faible PSNR).")
+            print("Cela peut indiquer une forte protection ou une dégradation importante.")
+        elif psnr_value >= 30 and psnr_value < 40:
+            print("L'image protégée est modérément altérée. La protection est probablement présente et subtile.")
+        else:
+            print("L'image protégée est très similaire à l'originale (PSNR élevé). La protection est faible ou absente, ou l'altération est minime.")
+    else:
+        logging.error("La vérification n'a pas pu être effectuée. Veuillez vérifier les chemins des fichiers.")
+        
+    # Gestion du rapport de sortie (à implémenter si tu souhaites sauvegarder le rapport)
+    if output_report_path:
+        # Ici, tu écrirais le PSNR, MSE et peut-être d'autres informations
+        # dans un fichier texte ou JSON à l'emplacement `output_report_path`.
+        with open(output_report_path, 'w') as f:
+            f.write(f"Vérification de l'image:\n")
+            f.write(f"  Image protégée: {protected_input_path}\n")
+            f.write(f"  Image originale: {original_input_path}\n")
+            f.write(f"  PSNR: {psnr_value:.2f} dB\n")
+            f.write(f"  MSE: {mse_value:.2f}\n")
+        logging.info(f"Rapport de vérification sauvegardé sous : {output_report_path}")
 
 if __name__ == "__main__":
     main()
