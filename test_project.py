@@ -397,10 +397,10 @@ def test_calculate_metrics_different_dimensions():
         calculate_image_metrics(protected_image_path, original_image_path)
 
 
-def test_calculate_matrics_same_image():
+def test_calculate_metrics_same_image():
 
     """
-    Vérifie que l'on a bien les résultats attendus si l'on passe exactement le même fichier, en tant qu'image original et image protégé
+    Vérifie que l'on a bien les résultats attendus si l'on passe exactement le même fichier, en tant qu'image originale et image protégée
     """
 
     protected_image_path = "test_files/cs50.jpg"
@@ -410,6 +410,24 @@ def test_calculate_matrics_same_image():
 
     assert result["mse"] == np.float32(0.0)
     assert result["psnr"] == float('inf')
+
+def test_calculate_metrics_same_image_comparison():
+
+    """
+    Vérifie que l'on a bien les résultats attendus si l'on passe une image originale et sa version protégée
+    """
+
+    original_image_path_cs50 = "test_files/cs50.jpg"
+    protected_image_path_cs50 = "test_files//output_files/cs50_protected.jpg"
+
+    # vérifier que l'image protégée n'existe pas déjà
+    assert not os.path.exists(protected_image_path_cs50)
+
+    secure_img(original_image_path_cs50, protected_image_path_cs50, strength=5.0, verbose_mode=False)
+
+    # Vérifie que le fichier de sortie a été créé
+    assert os.path.exists(protected_image_path_cs50)
+
 
 # End of test calculate_image_metrics()------------------------------
 
