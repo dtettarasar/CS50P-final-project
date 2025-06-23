@@ -411,21 +411,17 @@ def test_calculate_metrics_same_image():
     assert result["mse"] == np.float32(0.0)
     assert result["psnr"] == float('inf')
 
-def test_calculate_metrics_same_image_comparison():
+def test_calculate_metrics_image_comparison(tmp_path):
 
     """
     Vérifie que l'on a bien les résultats attendus si l'on passe une image originale et sa version protégée
     """
 
     original_image_path_cs50 = "test_files/cs50.jpg"
-    protected_image_path_cs50 = "test_files//output_files/cs50_protected.jpg"
+    protected_image_path_cs50 = tmp_path / "cs50_protected.jpg"
 
     original_image_path_cookie = "test_files/cookie_monster.webp"
-    protected_image_path_cookie = "test_files//output_files/cookie_monster_protected.webp"
-
-    # vérifier que l'image protégée n'existe pas déjà
-    assert not os.path.exists(protected_image_path_cs50)
-    assert not os.path.exists(protected_image_path_cookie)
+    protected_image_path_cookie = tmp_path / "cookie_monster_protected.webp"
 
     secure_img(original_image_path_cs50, protected_image_path_cs50, strength=5.0, verbose_mode=False)
     secure_img(original_image_path_cookie, protected_image_path_cookie, strength=5.0, verbose_mode=False)
@@ -433,6 +429,19 @@ def test_calculate_metrics_same_image_comparison():
     # Vérifie que le fichier de sortie a été créé
     assert os.path.exists(protected_image_path_cs50)
     assert os.path.exists(protected_image_path_cookie)
+
+    result_cs50 = calculate_image_metrics(protected_image_path_cs50, original_image_path_cs50)
+    result_cookie = calculate_image_metrics(protected_image_path_cookie, original_image_path_cookie)
+
+    # Pour MSE
+    # Compare result["mse"] avec 29.225985 (pour cs50.jpg) avec une tolérance relative de 1e-6 (par défaut)
+    # ou absolue si tu as une idée de la marge d'erreur maximale (e.g. abs=1e-5)
+    assert result_cs50["mse"] == pytest.approx(29.225985, rel=1e-6)
+    assert result_cookie["mse"] == pytest.approx(49.702225, rel=1e-6)
+
+    # Pour PSNR
+    assert result_cs50["psnr"] == pytest.approx(33.473114, rel=1e-6)
+    assert result_cookie["psnr"] == pytest.approx(31.167048, rel=1e-6)
 
 
 # End of test calculate_image_metrics()------------------------------
