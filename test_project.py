@@ -420,13 +420,19 @@ def test_calculate_metrics_same_image_comparison():
     original_image_path_cs50 = "test_files/cs50.jpg"
     protected_image_path_cs50 = "test_files//output_files/cs50_protected.jpg"
 
+    original_image_path_cookie = "test_files/cookie_monster.webp"
+    protected_image_path_cookie = "test_files//output_files/cookie_monster_protected.webp"
+
     # vérifier que l'image protégée n'existe pas déjà
     assert not os.path.exists(protected_image_path_cs50)
+    assert not os.path.exists(protected_image_path_cookie)
 
     secure_img(original_image_path_cs50, protected_image_path_cs50, strength=5.0, verbose_mode=False)
+    secure_img(original_image_path_cookie, protected_image_path_cookie, strength=5.0, verbose_mode=False)
 
     # Vérifie que le fichier de sortie a été créé
     assert os.path.exists(protected_image_path_cs50)
+    assert os.path.exists(protected_image_path_cookie)
 
 
 # End of test calculate_image_metrics()------------------------------
