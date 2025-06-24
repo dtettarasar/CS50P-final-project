@@ -11,7 +11,7 @@ import numpy as np
 
 from project import load_image_file, pil_to_numpy, numpy_to_pil, apply_dct_protection
 from project import _apply_dct_watermark_to_channel
-from project import calculate_image_metrics
+from project import calculate_image_metrics, show_result
 from project import secure_img
 
 # Test load_image_file()------------------------------
@@ -445,6 +445,27 @@ def test_calculate_metrics_image_comparison(tmp_path):
 
 
 # End of test calculate_image_metrics()------------------------------
+
+# Test show_result()------------------------------
+
+def test_show_result_generate_report(tmp_path):
+
+    """
+    Vérifier que la fonction génère bien un rapport
+    """
+
+    original_image_path_cs50 = "test_files/cs50.jpg"
+    protected_image_path_cs50 = tmp_path / "cs50_protected.jpg"
+    output_report_path_cs50 = tmp_path / "report_cs50.txt"
+
+    secure_img(original_image_path_cs50, protected_image_path_cs50, strength=5.0, verbose_mode=False)
+    result_cs50 = calculate_image_metrics(protected_image_path_cs50, original_image_path_cs50)
+    show_result(result_cs50, protected_image_path_cs50, original_image_path_cs50, output_report_path_cs50)
+
+    assert os.path.exists(output_report_path_cs50)
+
+
+# End of test show_result()------------------------------
 
 # Test apply_dct_protection()------------------------------
 
