@@ -84,7 +84,7 @@ def test_load_image_file_other_unexpected_exception(mocker):
 
 # End of test load_image_file()------------------------------
 
-def test_pil_numpy_conversion():
+def test_pil_to_numpy():
 
     img_cs50_pil_original = load_image_file("test_files/cs50.jpg")
     img_np_cs50 = pil_to_numpy(img_cs50_pil_original)
@@ -128,10 +128,6 @@ def test_pil_numpy_conversion():
 
     reconverted_np_cookie = np.array(img_cookie_from_numpy)
     assert np.allclose(img_np_cookie.astype(float), reconverted_np_cookie.astype(float), atol=1)
-
-def test_apply_dct_protection_function():
-
-    ...
 
 # --- Fixture pour préparer les données du canal de test ---
 # Utiliser une fixture permet de réutiliser les mêmes données préparées pour plusieurs tests
