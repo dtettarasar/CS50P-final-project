@@ -311,7 +311,7 @@ def test_dct_watermark_robustness_to_input_dtype(sample_channel_data):
 
 # Test calculate_image_metrics()------------------------------
 
-def test_calculate_metrics_file_not_found_protected():
+def test_calculate_image_metrics_file_not_found_protected():
     """
     Vérifie que la fonction lève FileNotFoundError avec le message correct, si l'image protégée n'existe pas.
     """
@@ -327,7 +327,7 @@ def test_calculate_metrics_file_not_found_protected():
         calculate_image_metrics(non_existent_protected_path, existing_original_path)
 
 
-def test_calculate_metrics_file_not_found_original():
+def test_calculate_image_metrics_file_not_found_original():
     """
     Vérifie que la fonction lève FileNotFoundError avec le message correct, si l'image originale n'existe pas.
     """
@@ -344,7 +344,7 @@ def test_calculate_metrics_file_not_found_original():
     os.remove(temp_protected_path) # Nettoyage
 
 
-def test_calculate_metrics_invalid_image_format_protected():
+def test_calculate_image_metrics_invalid_image_format_protected():
     """
     Vérifie que la fonction lève UnidentifiedImageError avec le message correct
     pour un format invalide de l'image protégée.
@@ -362,7 +362,7 @@ def test_calculate_metrics_invalid_image_format_protected():
 
     os.remove(invalid_image_path)
 
-def test_calculate_metrics_invalid_image_format_original():
+def test_calculate_image_metrics_invalid_image_format_original():
     """
     Vérifie que la fonction lève UnidentifiedImageError avec le message correct
     pour un format invalide de l'image originale.
@@ -380,7 +380,7 @@ def test_calculate_metrics_invalid_image_format_original():
 
 # todo : test pour ValueError en cas de dimensions différentes entre les deux images.
 
-def test_calculate_metrics_different_dimensions():
+def test_calculate_image_metrics_different_dimensions():
 
     """
     Vérifie que la fonction retourne bien une ValueError si les deux images n'ont pas la même dimension
@@ -393,7 +393,7 @@ def test_calculate_metrics_different_dimensions():
         calculate_image_metrics(protected_image_path, original_image_path)
 
 
-def test_calculate_metrics_same_image():
+def test_calculate_image_metrics_same_image():
 
     """
     Vérifie que l'on a bien les résultats attendus si l'on passe exactement le même fichier, en tant qu'image originale et image protégée
@@ -407,7 +407,7 @@ def test_calculate_metrics_same_image():
     assert result["mse"] == np.float32(0.0)
     assert result["psnr"] == float('inf')
 
-def test_calculate_metrics_image_comparison(tmp_path):
+def test_calculate_image_metrics(tmp_path):
 
     """
     Vérifie que l'on a bien les résultats attendus si l'on passe une image originale et sa version protégée
