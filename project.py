@@ -504,17 +504,17 @@ def show_result(result, protected_input_path, original_input_path, output_report
     else:
         logging.error("Verification could not be performed. Please check the file paths.")
         
-    # Gestion du rapport de sortie (à implémenter si tu souhaites sauvegarder le rapport)
+    # Gestion du rapport de sortie (à implémenter pour sauvegarder le rapport)
     if output_report_path:
         # Ici, tu écrirais le PSNR, MSE et peut-être d'autres informations
         # dans un fichier texte ou JSON à l'emplacement `output_report_path`.
         with open(output_report_path, 'w') as f:
-            f.write(f"Vérification de l'image:\n")
-            f.write(f"  Image protégée: {protected_input_path}\n")
-            f.write(f"  Image originale: {original_input_path}\n")
+            f.write(f"Image verification:\n")
+            f.write(f"  Protected image: {protected_input_path}\n")
+            f.write(f"  Original image: {original_input_path}\n")
             f.write(f"  PSNR: {psnr_value:.2f} dB\n")
             f.write(f"  MSE: {mse_value:.2f}\n")
-        logging.info(f"Rapport de vérification sauvegardé sous : {output_report_path}")
+        print(f"Audit report saved as : {output_report_path}")
 
 if __name__ == "__main__":
     main()
