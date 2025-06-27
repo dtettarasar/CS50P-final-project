@@ -489,20 +489,20 @@ def show_result(result, protected_input_path, original_input_path, output_report
 
     # Affichage des résultats
     if psnr_value is not None:
-        print(f"\n--- Résultats de la vérification ---")
+        print(f"\n--- Audit results ---")
         print(f"PSNR (Peak Signal-to-Noise Ratio) : {psnr_value:.2f} dB")
         print(f"MSE (Mean Squared Error) : {mse_value:.2f}")
         print(f"-----------------------------------\n")
 
         if psnr_value < 30: # Un seuil indicatif, à ajuster
-            print("L'image protégée présente des altérations significatives par rapport à l'originale (faible PSNR).")
-            print("Cela peut indiquer une forte protection ou une dégradation importante.")
+            print("The protected image shows significant alterations compared to the original (low PSNR).")
+            print("This may indicate strong protection or significant degradation.")
         elif psnr_value >= 30 and psnr_value < 40:
-            print("L'image protégée est modérément altérée. La protection est probablement présente et subtile.")
+            print("The protected image is moderately altered. The protection is probably present and subtle.")
         else:
-            print("L'image protégée est très similaire à l'originale (PSNR élevé). La protection est faible ou absente, ou l'altération est minime.")
+            print("The protected image is very similar to the original (high PSNR). The protection is weak or absent, or the alteration is minimal.")
     else:
-        logging.error("La vérification n'a pas pu être effectuée. Veuillez vérifier les chemins des fichiers.")
+        logging.error("Verification could not be performed. Please check the file paths.")
         
     # Gestion du rapport de sortie (à implémenter si tu souhaites sauvegarder le rapport)
     if output_report_path:
