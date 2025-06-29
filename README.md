@@ -1,6 +1,6 @@
 # AI Art Shield - Image Protection Tool
 
-#### Video Demo: <URL HERE>
+#### Video Demo: https://www.youtube.com/watch?v=uEjsgDL0S_0
 
 #### Description:
 **AI Art Shield** is a command-line tool developed in Python for protecting visual artworks from predatory generative artificial intelligence systems (such as midjourney, dall-e, sora, etc...). The project is part of Harvard's CS50P course.
